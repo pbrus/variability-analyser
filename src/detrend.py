@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
-from numpy import genfromtxt, arange, std, delete, where, stack
+from numpy import genfromtxt, arange, std, delete, where, stack, savetxt
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 from sklearn.cluster import KMeans
 from copy import deepcopy
@@ -87,6 +87,10 @@ def save_plot(time, magnitude, error_magnitude,
     draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers)
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     plt.savefig(png_filename, dpi=150)
+
+def detrend_data(data, spline, mean_magnitude):
+    data[:,1] = data[:,1] - spline(data[:,0]) + mean_magnitude
+    return data
 
 
 if __name__ == "__main__":
@@ -174,5 +178,5 @@ if __name__ == "__main__":
         save_plot(time, magnitude, error_magnitude, spline_coordinates,
                   centers, args.output_lightcurve)
 
-    #plt.plot(time, magnitude - spline_function(time) + mean_magnitude, '.')
-
+    detrended_data = detrend_data(org_data, spline, magnitude.mean())
+    savetxt(args.output_lightcurve, detrended_data, fmt="%16.6f %9.4f %7.4f")
