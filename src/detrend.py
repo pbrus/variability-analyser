@@ -4,9 +4,15 @@ import matplotlib.pyplot as plt
 from numpy import genfromtxt, arange, std, delete, where, stack
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 from sklearn.cluster import KMeans
-from argparse import ArgumentParser, RawTextHelpFormatter
+from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
 
+
+def valid_seasons_amount(seasons_amount):
+    if seasons_amount < 1:
+        raise ArgumentTypeError("At least 2 seasons in data are required!")
+    else:
+        seasons_amount
 
 def get_data(filename):
     return genfromtxt(filename)
@@ -29,7 +35,7 @@ def warn_rejected_points(filename):
 def unpack_data(data):
     return data[:,0], data[:,1], data[:,2]
 
-def calculate_kmeans(time, magnitude, error_magnitude, clusters_number=9):
+def calculate_kmeans(time, magnitude, error_magnitude, clusters_number=2):
     kmeans = KMeans(n_clusters=clusters_number,
                     random_state=0).fit(stack((time, magnitude), axis=1),
                                         sample_weight=error_magnitude)
@@ -52,7 +58,7 @@ def y_domain_spline(x_domain_spline):
 if __name__ == "__main__":
     argparser = ArgumentParser(
         prog='detrend.py',
-        description='>> Removes trends from a lightcurve <<',
+        description='>> Removes seasonal trends from a lightcurve <<',
         epilog='Copyright (c) 2018 Przemysław Bruś',
         formatter_class=RawTextHelpFormatter
     )
@@ -72,11 +78,28 @@ if __name__ == "__main__":
         'output_lightcurve',
         help=dedent('''\
         The name of a file which will store a detrended lightcurve.
+
         ''')
     )
 
+    argparser.add_argument(
+        'seasons_amount',
+        help=dedent('''\
+        The number of seasons in the data.
+        The seasons are separated by time-gaps in the data.
+
+        '''),
+        type=int
+    )
+
     args = argparser.parse_args()
-    data = get_data(args.input_lightcurve)
+    try:
+        seasons_amount = valid_seasons_amount(args.seasons_amount)
+        data = get_data(args.input_lightcurve)
+    except (ArgumentTypeError, OSError) as error:
+        print(error)
+        exit()
+
     all_points_number = len(data)
     data = sigma_clipping_magnitude(data)
 
