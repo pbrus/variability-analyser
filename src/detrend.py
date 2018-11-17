@@ -9,10 +9,10 @@ from textwrap import dedent
 
 
 def valid_seasons_amount(seasons_amount):
-    if seasons_amount < 1:
+    if seasons_amount < 2:
         raise ArgumentTypeError("At least 2 seasons in data are required!")
     else:
-        seasons_amount
+        return seasons_amount
 
 def get_data(filename):
     return genfromtxt(filename)
@@ -44,6 +44,12 @@ def calculate_kmeans(time, magnitude, error_magnitude, clusters_number=2):
 
 def sorted_centers(kmeans):
     return kmeans.cluster_centers_[kmeans.cluster_centers_[:,0].argsort()]
+
+def spline_order(seasons_amount):
+    if seasons_amount < 4:
+        return seasons_amount - 1
+    else:
+        return 3
 
 def spline_function(clusters_centers, order=3):
     return spline(clusters_centers[:,0], clusters_centers[:,1], k=order)
@@ -107,9 +113,9 @@ if __name__ == "__main__":
         warn_rejected_points(args.input_lightcurve)
 
     time, magnitude, error_magnitude = unpack_data(data)
-    kmeans = calculate_kmeans(time, magnitude, error_magnitude)
+    kmeans = calculate_kmeans(time, magnitude, error_magnitude, seasons_amount)
     centers = sorted_centers(kmeans)
-    spline = spline_function(centers)
+    spline = spline_function(centers, spline_order(seasons_amount))
     x_spline = x_domain_spline(time)
     y_spline = spline(x_spline)
 
