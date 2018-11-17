@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from numpy import genfromtxt, arange, std, delete, where, stack
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
 from sklearn.cluster import KMeans
+from copy import deepcopy
+from os.path import basename, splitext, dirname, join
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
 
@@ -60,6 +62,32 @@ def x_domain_spline(time):
 def y_domain_spline(x_domain_spline):
     return spline_function(x_domain_spline)
 
+def split_filename(filename):
+    return splitext(basename(filename))
+
+def draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
+    x_spline, y_spline = spline_coordinates
+
+    plt.xlabel("Time [JD]")
+    plt.ylabel("Brightness [mag]")
+    plt.plot(x_spline, len(x_spline)*[magnitude.mean()],
+             color="gray", linewidth=0.8, linestyle="dashed")
+    plt.plot(time, magnitude, '.', alpha=0.8)
+    plt.plot(x_spline, y_spline, 'r--')
+    for center in centers:
+        plt.plot(center[0], center[1], 'r.', markersize=15)
+
+def display_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
+    draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers)
+    plt.show()
+
+def save_plot(time, magnitude, error_magnitude,
+              spline_coordinates, centers, filename):
+
+    draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers)
+    png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
+    plt.savefig(png_filename, dpi=150)
+
 
 if __name__ == "__main__":
     argparser = ArgumentParser(
@@ -98,6 +126,25 @@ if __name__ == "__main__":
         type=int
     )
 
+    argparser.add_argument(
+        '--display',
+        help=dedent('''\
+        Display a plot.
+
+        '''),
+        action='store_true'
+    )
+
+    argparser.add_argument(
+        '--image',
+        help=dedent('''\
+        Save a plot to the PNG file.
+        The name of the image will be the same as for output file.
+
+        '''),
+        action='store_true'
+    )
+
     args = argparser.parse_args()
     try:
         seasons_amount = valid_seasons_amount(args.seasons_amount)
@@ -106,10 +153,10 @@ if __name__ == "__main__":
         print(error)
         exit()
 
-    all_points_number = len(data)
+    org_data = deepcopy(data)
     data = sigma_clipping_magnitude(data)
 
-    if too_much_points_rejected(all_points_number, len(data)):
+    if too_much_points_rejected(len(org_data), len(data)):
         warn_rejected_points(args.input_lightcurve)
 
     time, magnitude, error_magnitude = unpack_data(data)
@@ -118,14 +165,14 @@ if __name__ == "__main__":
     spline = spline_function(centers, spline_order(seasons_amount))
     x_spline = x_domain_spline(time)
     y_spline = spline(x_spline)
+    spline_coordinates = x_spline, y_spline
 
-    plt.xlabel("Time [JD]")
-    plt.ylabel("Brightness [mag]")
-    plt.plot(x_spline, len(x_spline)*[magnitude.mean()],
-             color="gray", linewidth=0.8, linestyle="dashed")
+    if args.display:
+        display_plot(time, magnitude, error_magnitude,
+                     spline_coordinates, centers)
+    if args.image:
+        save_plot(time, magnitude, error_magnitude, spline_coordinates,
+                  centers, args.output_lightcurve)
+
     #plt.plot(time, magnitude - spline_function(time) + mean_magnitude, '.')
-    plt.plot(time, magnitude, '.', alpha=0.8)
-    plt.plot(x_spline, y_spline, 'r--')
-    for center in centers:
-        plt.plot(center[0], center[1], 'r.', markersize=15)
-    plt.show()
+
