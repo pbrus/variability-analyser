@@ -84,9 +84,11 @@ def display_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
 def save_plot(time, magnitude, error_magnitude,
               spline_coordinates, centers, filename):
 
+    figure = plt.figure(figsize=(10, 5), dpi=150)
+    figure.add_subplot(111)
     draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers)
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
-    plt.savefig(png_filename, dpi=150)
+    figure.savefig(png_filename)
 
 def detrend_data(data, spline, mean_magnitude):
     data[:,1] = data[:,1] - spline(data[:,0]) + mean_magnitude
