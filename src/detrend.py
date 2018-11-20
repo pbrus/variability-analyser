@@ -247,7 +247,7 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
-def _draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
+def _draw_plot(time, magnitude, spline_coordinates, centers):
     x_spline, y_spline = spline_coordinates
 
     plt.xlabel("Time [JD]")
@@ -259,7 +259,7 @@ def _draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
     for center in centers:
         plt.plot(center[0], center[1], 'r.', markersize=15)
 
-def display_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
+def display_plot(time, magnitude, spline_coordinates, centers):
     """
     Display a plot.
 
@@ -269,18 +269,15 @@ def display_plot(time, magnitude, error_magnitude, spline_coordinates, centers):
         The time vector.
     magnitude : ndarray
         The magnitude vector.
-    error_magnitude : ndarray
-        The error of magnitude vector.
     spline_coordinates : ndarray
         The (n, 2)-shaped ndarray with points.
     centers : ndarray
         The (n, 2)-shaped ndarray with points.
     """
-    _draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers)
+    _draw_plot(time, magnitude, spline_coordinates, centers)
     plt.show()
 
-def save_plot(time, magnitude, error_magnitude,
-              spline_coordinates, centers, filename):
+def save_plot(time, magnitude, spline_coordinates, centers, filename):
     """
     Save a plot to a file.
 
@@ -290,8 +287,6 @@ def save_plot(time, magnitude, error_magnitude,
         The time vector.
     magnitude : ndarray
         The magnitude vector.
-    error_magnitude : ndarray
-        The error of magnitude vector.
     spline_coordinates : ndarray
         The (n, 2)-shaped ndarray with points.
     centers : ndarray
@@ -301,7 +296,7 @@ def save_plot(time, magnitude, error_magnitude,
     """
     figure = plt.figure(figsize=(10, 5), dpi=150)
     figure.add_subplot(111)
-    _draw_plot(time, magnitude, error_magnitude, spline_coordinates, centers)
+    _draw_plot(time, magnitude, spline_coordinates, centers)
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
 
@@ -407,10 +402,9 @@ if __name__ == "__main__":
     spline_coordinates = x_spline, y_spline
 
     if args.display:
-        display_plot(time, magnitude, error_magnitude,
-                     spline_coordinates, centers)
+        display_plot(time, magnitude, spline_coordinates, centers)
     if args.image:
-        save_plot(time, magnitude, error_magnitude, spline_coordinates,
+        save_plot(time, magnitude, spline_coordinates,
                   centers, args.output_lightcurve)
 
     detrended_data = detrend_data(org_data, spline, magnitude.mean())
