@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy.ma as ma
-from numpy import genfromtxt, std, arange, logical_not
+from numpy import genfromtxt, std, arange, savetxt
 from copy import deepcopy
 from os.path import basename, splitext, dirname, join
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
@@ -43,8 +43,8 @@ def trim(data, lower_cut=0, upper_cut=0):
 
     Returns
     -------
-    trim_data : masked ndarray
-
+    masked_data : MaskedArray
+        The ndarray masked outstanding points in the second column.
     """
     if (lower_cut == 0 and upper_cut == 0):
         trim_data = sigma_clipping(data)
@@ -66,7 +66,7 @@ def sigma_clipping(data):
     Returns
     -------
     masked_data : MaskedArray
-        The ndarray masked clipped-points in the second column.
+        The ndarray with masked clipped-points in the second column.
     """
     masked_data = ma.masked_array(data)
 
@@ -146,7 +146,7 @@ def _draw_plot(data, lower_line, upper_line):
                  color="gray", linewidth=0.8, linestyle="dashed")
 
     plt.plot(data[:,0], data[:,1], '.')
-    data.mask = logical_not(data.mask)
+    data.mask = ~data.mask
     plt.plot(data[:,0], data[:,1], 'r.')
 
 def display_plot(data, lower_line, upper_line):
