@@ -186,6 +186,25 @@ def save_plot(data, filename, lower_line=0, upper_line=0):
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
 
+def filter_lightcurve(data):
+    """
+    Filter the data removing outstanding points, i.e. masked rows.
+
+    Parameters
+    ----------
+    data : MaskedArray
+        The (n, 3)-shaped array with data.
+
+    Returns
+    -------
+    ndarray
+
+    """
+    n = data.shape[0] - len([row for row in data.mask if row.all()])
+    m = data.shape[1]
+
+    return data.data[~data.mask].reshape(n, m)
+
 
 if __name__ == "__main__":
     argparser = ArgumentParser(
@@ -270,3 +289,6 @@ if __name__ == "__main__":
 
     if args.image:
         save_plot(trim_data_copy, args.output_lightcurve, args.min, args.max)
+
+    savetxt(args.output_lightcurve, filter_lightcurve(trim_data),
+            fmt="%16.6f %9.4f %7.4f")
