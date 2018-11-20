@@ -44,7 +44,7 @@ def trim(data, lower_cut=0, upper_cut=0):
     Returns
     -------
     masked_data : MaskedArray
-        The ndarray masked outstanding points in the second column.
+        The ndarray with masked outstanding points in the second column.
     """
     if (lower_cut == 0 and upper_cut == 0):
         trim_data = sigma_clipping(data)
@@ -93,7 +93,7 @@ def cutoff(data, lower_cut, upper_cut):
     Returns
     -------
     masked_data : MaskedArray
-        The ndarray masked clipped-points in the second column.
+        The ndarray with masked clipped-points in the second column.
     """
     masked_data = ma.masked_array(data)
 
@@ -198,7 +198,7 @@ def filter_lightcurve(data):
     Returns
     -------
     ndarray
-
+        The (n, 3)-shaped array without outstanding points.
     """
     n = data.shape[0] - len([row for row in data.mask if row.all()])
     m = data.shape[1]
@@ -228,7 +228,7 @@ if __name__ == "__main__":
     argparser.add_argument(
         'output_lightcurve',
         help=dedent('''\
-        The name of a file which will store a detrended lightcurve.
+        The name of a file which will store a filtered lightcurve.
 
         ''')
     )
