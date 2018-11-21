@@ -2,6 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy.ma as ma
+from matplotlib.widgets import Cursor
 from numpy import genfromtxt, std, arange, savetxt
 from copy import deepcopy
 from os.path import basename, splitext, dirname, join
@@ -135,19 +136,19 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
-def _draw_plot(data, lower_line, upper_line):
-    plt.xlabel("Time [JD]")
-    plt.ylabel("Brightness [mag]")
+def _draw_plot(ax, data, lower_line, upper_line):
+    ax.set_xlabel("Time [JD]")
+    ax.set_ylabel("Brightness [mag]")
 
     if not (lower_line == 0 and upper_line == 0):
-        plt.plot(x_domain(data[:,0]), [lower_line]*len(x_domain(data[:,0])),
-                 color="gray", linewidth=0.8, linestyle="dashed")
-        plt.plot(x_domain(data[:,0]), [upper_line]*len(x_domain(data[:,0])),
-                 color="gray", linewidth=0.8, linestyle="dashed")
+        ax.plot(x_domain(data[:,0]), [lower_line]*len(x_domain(data[:,0])),
+                color="gray", linewidth=0.8, linestyle="dashed")
+        ax.plot(x_domain(data[:,0]), [upper_line]*len(x_domain(data[:,0])),
+                color="gray", linewidth=0.8, linestyle="dashed")
 
-    plt.plot(data[:,0], data[:,1], '.')
+    ax.plot(data[:,0], data[:,1], '.')
     data.mask = ~data.mask
-    plt.plot(data[:,0], data[:,1], 'r.')
+    ax.plot(data[:,0], data[:,1], 'r.')
 
 def display_plot(data, lower_line, upper_line):
     """
@@ -162,7 +163,10 @@ def display_plot(data, lower_line, upper_line):
     upper_line : float
         An upper cut-off for magnitude.
     """
-    _draw_plot(data, lower_line, upper_line)
+    figure = plt.figure()
+    ax = figure.add_subplot(111)
+    _draw_plot(ax, data, lower_line, upper_line)
+    cursor = Cursor(ax, useblit=True, color='gray', linewidth=0.5)
     plt.show()
 
 def save_plot(data, filename, lower_line=0, upper_line=0):
@@ -181,8 +185,8 @@ def save_plot(data, filename, lower_line=0, upper_line=0):
         An upper cut-off for magnitude.
     """
     figure = plt.figure(figsize=(10, 5), dpi=150)
-    figure.add_subplot(111)
-    _draw_plot(data, lower_line, upper_line)
+    ax = figure.add_subplot(111)
+    _draw_plot(ax, data, lower_line, upper_line)
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
 
