@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy.ma as ma
 from matplotlib.widgets import Cursor
-from numpy import genfromtxt, std, arange, savetxt
+from numpy import genfromtxt, std, arange, savetxt, bool_
 from copy import deepcopy
 from os.path import basename, splitext, dirname, join
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
@@ -204,10 +204,12 @@ def filter_lightcurve(data):
     ndarray
         The (n, 3)-shaped array without outstanding points.
     """
-    n = data.shape[0] - len([row for row in data.mask if row.all()])
-    m = data.shape[1]
-
-    return data.data[~data.mask].reshape(n, m)
+    if type(data.mask) == bool_:
+        return data
+    else:
+        n = data.shape[0] - len([row for row in data.mask if row.all()])
+        m = data.shape[1]
+        return data.data[~data.mask].reshape(n, m)
 
 
 if __name__ == "__main__":
