@@ -311,13 +311,20 @@ if __name__ == "__main__":
         exit()
 
     trim_data = trim(data, args.min, args.max)
-    trim_data_copy = deepcopy(trim_data)
 
     if args.display:
-        display_plot(trim_data, args.min, args.max)
+        figure = plt.figure()
+        ax = figure.add_subplot(111)
+        display_plot(ax, trim_data, args.min, args.max)
+        if lim != []:
+            trim_data = trim(trim_data, lim[0], lim[1])
 
     if args.image:
-        save_plot(trim_data_copy, args.output_lightcurve, args.min, args.max)
+        if args.display and lim != []:
+            trim_data = trim(trim_data, lim[0], lim[1])
+            save_plot(trim_data, args.output_lightcurve, lim[0], lim[1])
+        else:
+            save_plot(trim_data, args.output_lightcurve, args.min, args.max)
 
     savetxt(args.output_lightcurve, filter_lightcurve(trim_data),
             fmt="%16.6f %9.4f %7.4f")
