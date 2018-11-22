@@ -10,6 +10,9 @@ from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
 
 
+limit = []
+lim = []
+
 def get_data(filename):
     """
     Alias for the numpy.genfromtxt function.
@@ -150,12 +153,15 @@ def _draw_plot(ax, data, lower_line, upper_line):
     data.mask = ~data.mask
     ax.plot(data[:,0], data[:,1], 'r.')
 
-def display_plot(data, lower_line, upper_line):
+def display_plot(ax, data, lower_line, upper_line):
     """
-    Display a plot.
+    Display an interactive plot. Mark lower and upper limit of magnitude
+    by clicking on the plot.
 
     Parameters
     ----------
+    ax : AxesSubplot
+        An axes subplot.
     data : MaskedArray
         The (n, 3)-shaped array with data.
     lower_line : float
@@ -163,11 +169,23 @@ def display_plot(data, lower_line, upper_line):
     upper_line : float
         An upper cut-off for magnitude.
     """
-    figure = plt.figure()
-    ax = figure.add_subplot(111)
-    _draw_plot(ax, data, lower_line, upper_line)
+    ax.cla()
+    _draw_plot(ax, data, lower_line, upper_line, 4)
     cursor = Cursor(ax, useblit=True, color='gray', linewidth=0.5)
+    figure.canvas.mpl_connect('button_press_event', _onclick)
     plt.show()
+
+def _onclick(event):
+    global limit, lim
+    limit.append(event.ydata)
+
+    if len(limit) == 2:
+        if len(set(limit)) == 1:
+            limit = []
+        else:
+            lim = sorted(deepcopy(limit))
+            limit = []
+            display_plot(ax, cutoff(data, lim[0], lim[1]), lim[0], lim[1])
 
 def save_plot(data, filename, lower_line=0, upper_line=0):
     """
