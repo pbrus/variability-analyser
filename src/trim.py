@@ -143,7 +143,7 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
-def _draw_plot(ax, data, lower_line, upper_line):
+def _draw_plot(ax, data, lower_line, upper_line, markersize=2):
     ax.set_xlabel("Time [JD]")
     ax.set_ylabel("Brightness [mag]")
 
@@ -153,9 +153,10 @@ def _draw_plot(ax, data, lower_line, upper_line):
         ax.plot(x_domain(data[:,0]), [upper_line]*len(x_domain(data[:,0])),
                 color="gray", linewidth=0.8, linestyle="dashed")
 
-    ax.plot(data[:,0], data[:,1], '.')
+    ax.plot(data[:,0], data[:,1], '.', markersize=markersize)
     data.mask = ~data.mask
-    ax.plot(data[:,0], data[:,1], 'r.')
+    ax.plot(data[:,0], data[:,1], 'r.', markersize=markersize)
+    data.mask = ~data.mask
 
 def display_plot(ax, data, lower_line, upper_line):
     """
