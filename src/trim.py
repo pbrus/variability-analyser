@@ -100,6 +100,7 @@ def cutoff(data, lower_cut, upper_cut):
         The ndarray with masked clipped-points in the second column.
     """
     masked_data = ma.masked_array(data)
+    masked_data.mask = False
 
     for i in range(masked_data.shape[1]):
         masked_data[:,i] = ma.masked_where(
@@ -121,7 +122,10 @@ def x_domain(time):
     ndarray
         The transformed time vector.
     """
-    return arange(time.min(), time.max(), (time.max() - time.min())/len(time))
+    t = deepcopy(time)
+    t.mask = False
+
+    return arange(t.min(), t.max(), (t.max() - t.min())/len(t))
 
 def split_filename(filename):
     """
