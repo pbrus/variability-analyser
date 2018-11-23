@@ -247,15 +247,15 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
-def _draw_plot(time, magnitude, spline_coordinates, centers):
+def _draw_plot(time, magnitude, spline_coordinates, centers, markersize=2):
     x_spline, y_spline = spline_coordinates
 
     plt.xlabel("Time [JD]")
     plt.ylabel("Brightness [mag]")
     plt.plot(x_spline, len(x_spline)*[magnitude.mean()],
              color="gray", linewidth=0.8, linestyle="dashed")
-    plt.plot(time, magnitude, '.', alpha=0.8)
-    plt.plot(x_spline, y_spline, 'r--')
+    plt.plot(time, magnitude, '.', alpha=0.8, markersize=markersize)
+    plt.plot(x_spline, y_spline, 'r--', linewidth=1.5)
     for center in centers:
         plt.plot(center[0], center[1], 'r.', markersize=15)
 
@@ -274,7 +274,7 @@ def display_plot(time, magnitude, spline_coordinates, centers):
     centers : ndarray
         The (n, 2)-shaped ndarray with points.
     """
-    _draw_plot(time, magnitude, spline_coordinates, centers)
+    _draw_plot(time, magnitude, spline_coordinates, centers, 4)
     plt.show()
 
 def save_plot(time, magnitude, spline_coordinates, centers, filename):
