@@ -146,6 +146,7 @@ def split_filename(filename):
 def _draw_plot(ax, data, lower_line, upper_line, markersize=2):
     ax.set_xlabel("Time [JD]")
     ax.set_ylabel("Brightness [mag]")
+    ax.invert_yaxis()
 
     if not (lower_line == 0 and upper_line == 0):
         ax.plot(x_domain(data[:,0]), [lower_line]*len(x_domain(data[:,0])),

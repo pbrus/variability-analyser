@@ -252,6 +252,7 @@ def _draw_plot(time, magnitude, spline_coordinates, centers, markersize=2):
 
     plt.xlabel("Time [JD]")
     plt.ylabel("Brightness [mag]")
+    plt.gca().invert_yaxis()
     plt.plot(x_spline, len(x_spline)*[magnitude.mean()],
              color="gray", linewidth=0.8, linestyle="dashed")
     plt.plot(time, magnitude, '.', alpha=0.8, markersize=markersize)
