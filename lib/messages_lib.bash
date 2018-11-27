@@ -9,9 +9,9 @@ function print_welcome()
     echo -e ""
     echo -e " ${BROWN}Variability analyzer _||__|__${RESET}"
     echo -e ""
-    echo -e " Usage: var_analyzer.sh <lightcurve>"
+    echo -e " Usage: var_analyser.sh <lightcurve>"
     echo -e ""
-    echo -e " Version: 2018.11.15"
+    echo -e " Version: 0.0.0"
     echo -e " Przemysław Bruś"
     echo -e ""
 }
