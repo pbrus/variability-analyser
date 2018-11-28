@@ -39,14 +39,15 @@ def substract_model(data, sine):
     return data
 
 def approximate_sines_parameters(lightcurve, frequencies):
-    results = np.empty((0,3))
+    results = np.empty((0,4))
 
     for frequency in frequencies:
         parameters = approximate_sine_parameters(lightcurve, frequency)
         sine_function = sine(frequency, *parameters)
         lightcurve = substract_model(lightcurve, sine_function)
-        parameters = np.insert(parameters, -1, frequency)
-        results = np.append(results, parameters.reshape((1,4)))
+        parameters = np.insert(parameters, 1, frequency)
+        parameters = parameters.reshape((1,4))
+        results = np.append(results, parameters, axis=0)
 
     return results
 
