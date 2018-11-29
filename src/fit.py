@@ -11,7 +11,7 @@ def fit_approximate_sine(frequency):
 
     return approximate_sine
 
-def compute_residuals(frequency):
+def sine_residuals(frequency):
 
     def residuals(parameters, x, y):
         approximate_sine = fit_approximate_sine(frequency)
@@ -21,7 +21,7 @@ def compute_residuals(frequency):
 
 def approximate_sine_parameters(lightcurve, frequency):
     x0 = np.array([0., 0., 0.])
-    result = least_squares(compute_residuals(frequency), x0,
+    result = least_squares(sine_residuals(frequency), x0,
                            args=(lightcurve[:,0], lightcurve[:,1]))
 
     return result.x
