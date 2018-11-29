@@ -51,6 +51,28 @@ def approximate_sines_parameters(lightcurve, frequencies):
 
     return results
 
+def residuals_final_fitting(parameters, x, y):
+    sum_sines = 0
+    n_param = 4
+
+    for i in range(0, len(parameters), n_param):
+        par = parameters[i:i+n_param]
+
+        if i == 0:
+            sum_sines += par[0]*np.sin(2*np.pi*par[1]*x + par[2]) + par[3]
+        else:
+            sum_sines += par[0]*np.sin(2*np.pi*par[1]*x + par[2])
+
+    return sum_sines - y
+
+def final_fitting(lightcurve, sines_parameters):
+    x0 = sines_parameters.flatten()
+
+    result = least_squares(residuals_final_fitting, x0,
+                           args=(lightcurve[:,0], lightcurve[:,1]))
+
+    return result.x.reshape((-1,4))
+
 
 lightcurve = np.genfromtxt("lc")
 frequencies = [30.0, 11.3]
