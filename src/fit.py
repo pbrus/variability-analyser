@@ -72,7 +72,28 @@ def final_fitting(lightcurve, sines_parameters):
     result = least_squares(residuals_final_fitting, x0,
                            args=(lightcurve[:,0], lightcurve[:,1]))
 
-    return result.x.reshape((-1,4))
+    fitting_parameters = _replace_negative_parameters(result.x)
+
+    return fitting_parameters.reshape((-1,4))
+
+def _replace_negative_parameters(parameters):
+    n_param = 4
+
+    for i in range(0, len(parameters), n_param):
+        par = parameters[i:i+n_param]
+
+        if par[0] < 0.0:
+            par[0] = -par[0]
+            par[2] = np.pi + par[2]
+
+    return parameters
+
+def save_residuals(lightcurve, parameters, filename):
+    residuals = residuals_final_fitting(parameters.flatten(),
+                                        lightcurve[:,0], lightcurve[:,1])
+    lightcurve[:,1] = residuals
+    np.savetxt(filename, lightcurve, fmt="%16.6f %9.4f %7.4f")
+
 
 
 lightcurve = np.genfromtxt("lc")
