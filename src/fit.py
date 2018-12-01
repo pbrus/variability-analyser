@@ -232,6 +232,27 @@ def save_residuals(lightcurve, parameters, filename):
     lightcurve[:,1] = residuals
     np.savetxt(filename, lightcurve, fmt="%16.6f %9.4f %7.4f")
 
+def print_parameters(parameters):
+    """
+    Print parameters of sines in a nice format:
+
+    amplitude1 frequency1 phase1 y_intercept1
+    amplitude2 frequency2 phase2
+    amplitude3 frequency3 phase3
+    ...
+
+    y_intercept is printed only for the first sine function.
+
+    parameters : ndarray
+        An ndarray with (n, 4)-shape storing parameters for each sine.
+    """
+    for i, par in enumerate(parameters):
+        if i == 0:
+            fmt = "{0:16.10f} {1:16.10f} {2:16.10f} {3:16.10f}"
+        else:
+            fmt = "{0:16.10f} {1:16.10f} {2:16.10f}"
+        print(fmt.format(*par))
+
 
 
 lightcurve = np.genfromtxt("lc")
