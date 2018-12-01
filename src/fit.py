@@ -2,6 +2,7 @@
 
 import numpy as np
 from scipy.optimize import least_squares
+from copy import deepcopy
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
 
@@ -259,11 +260,6 @@ def print_parameters(parameters):
         print(fmt.format(*par))
 
 
-
-lightcurve = np.genfromtxt("lc")
-frequencies = [30.0, 11.3]
-
-approximate_sines_parameters(lightcurve, frequencies)
 if __name__ == "__main__":
     argparser = ArgumentParser(
         prog='fit.py',
@@ -304,3 +300,19 @@ if __name__ == "__main__":
         metavar='filename',
         type=str
     )
+
+    args = argparser.parse_args()
+    try:
+        lightcurve = np.genfromtxt(args.lightcurve)
+    except OSError as error:
+        print(error)
+        exit()
+
+    lightcurve_org = deepcopy(lightcurve)
+    frequencies = args.freq
+    sines_parameters = approximate_sines_parameters(lightcurve, frequencies)
+    final_parameters = final_fitting(lightcurve_org, sines_parameters)
+    print_parameters(final_parameters)
+
+    if args.resid != None:
+        save_residuals(lightcurve_org, final_parameters, args.resid)
