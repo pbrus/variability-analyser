@@ -209,6 +209,9 @@ def _replace_negative_parameters(parameters):
             par[0] = -par[0]
             par[2] = np.pi + par[2]
 
+        if par[2] < 0.0:
+            par[2] = 2*np.pi + par[2]
+
     return parameters
 
 def save_residuals(lightcurve, parameters, filename):
