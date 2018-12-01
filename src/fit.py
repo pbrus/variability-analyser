@@ -2,6 +2,8 @@
 
 import numpy as np
 from scipy.optimize import least_squares
+from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
+from textwrap import dedent
 
 
 def fit_approximate_sine(frequency):
@@ -262,3 +264,43 @@ lightcurve = np.genfromtxt("lc")
 frequencies = [30.0, 11.3]
 
 approximate_sines_parameters(lightcurve, frequencies)
+if __name__ == "__main__":
+    argparser = ArgumentParser(
+        prog='fit.py',
+        description='>> Fit a sum of sines to the lightcurve <<',
+        epilog='Copyright (c) 2018 Przemysław Bruś',
+        formatter_class=RawTextHelpFormatter
+    )
+
+    argparser.add_argument(
+        'lightcurve',
+        help=dedent('''\
+        The name of a file which stores lightcurve data.
+        ------------------------------------
+        The file must contain three columns:
+        time magnitude magnitude_error
+
+        ''')
+    )
+
+    argparser.add_argument(
+        '--freq',
+        help=dedent('''\
+        A list of frequencies for each sine.
+
+        '''),
+        nargs='+',
+        metavar='f1',
+        type=float,
+        required=True
+    )
+
+    argparser.add_argument(
+        '--resid',
+        help=dedent('''\
+        A name of the file storing residuals.
+
+        '''),
+        metavar='filename',
+        type=str
+    )
