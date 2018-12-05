@@ -23,7 +23,7 @@ def linear_combination(frequencies, frequency, minimum=-10, maximum=10,
     coeff_sum = np.inf
 
     for coefficients in coeff_iter:
-        if (frequency - np.dot(frequencies, coefficients)) < epsilon:
+        if abs(frequency - np.dot(frequencies, coefficients)) < epsilon:
             current_coeff_sum = np.power(coefficients, 2).sum()
             if current_coeff_sum < coeff_sum:
                 coeff_sum = current_coeff_sum
