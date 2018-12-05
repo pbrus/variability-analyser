@@ -15,15 +15,21 @@ def coefficients_iterator(size, minimum=-10, maximum=10):
     for row in product(*range_list):
         yield np.array(row)
 
-def linear_combination(frequencies, frequency, minimum=-10, maximum=10):
+def linear_combination(frequencies, frequency, minimum=-10, maximum=10,
+                       epsilon=1e-6):
     coeff_iter = coefficients_iterator(len(frequencies), minimum, maximum)
     frequencies = np.array(frequencies)
+    coefficients_array = np.zeros(len(frequencies), dtype=bool)
+    coeff_sum = np.inf
 
     for coefficients in coeff_iter:
-        if frequency == np.dot(frequencies, coefficients):
-            return coefficients
+        if (frequency - np.dot(frequencies, coefficients)) < epsilon:
+            current_coeff_sum = np.power(coefficients, 2).sum()
+            if current_coeff_sum < coeff_sum:
+                coeff_sum = current_coeff_sum
+                coefficients_array = coefficients
 
-    return False
+    return coefficients_array
 
 
 if __name__ == "__main__":
