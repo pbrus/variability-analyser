@@ -65,4 +65,44 @@ if __name__ == "__main__":
         required=True
     )
 
+    argparser.add_argument(
+        '--min',
+        help=dedent('''\
+        A minimum value (int) of all coefficients.
+
+        '''),
+        metavar='min',
+        type=int,
+        default=-10
+    )
+
+    argparser.add_argument(
+        '--max',
+        help=dedent('''\
+        A maximum value (int) of all coefficients.
+
+        '''),
+        metavar='max',
+        type=int,
+        default=10
+    )
+
+    argparser.add_argument(
+        '--eps',
+        help=dedent('''\
+        A comparison accuracy of a single frequency
+        and linear combination.
+
+        '''),
+        metavar='eps',
+        type=float,
+        default=1e-6
+    )
+
     args = argparser.parse_args()
+    combination = linear_combination(args.basic_freq, args.freq,
+                                     minimum=args.min, maximum=args.max,
+                                     epsilon=args.eps)
+
+    if combination.any():
+        print(*combination)
