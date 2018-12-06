@@ -5,6 +5,27 @@ from scipy.optimize import least_squares
 from copy import deepcopy
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
+from freq_comb import coefficients_generator, linear_combination
+
+
+def approximate_sines_sum(frequencies):
+
+    def sines_sum(x, *sines_parameters):
+        param = sines_parameters
+        s = 0
+
+        for i, frequency in enumerate(frequencies):
+            i *= 3
+            s += (param[i]*np.sin(2*np.pi*frequency*x)
+                  + param[i+1]*np.cos(2*np.pi*frequency*x)
+                  + param[i+2])
+
+        return s
+
+    return sines_sum
+
+
+
 
 
 def fit_approximate_sine(frequency):
