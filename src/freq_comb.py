@@ -43,7 +43,7 @@ if __name__ == "__main__":
     )
 
     argparser.add_argument(
-        '--basic_freq',
+        '--base',
         help=dedent('''\
         A list of basic frequencies.
 
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     )
 
     args = argparser.parse_args()
-    combination = linear_combination(args.basic_freq, args.freq,
+    combination = linear_combination(args.base, args.freq,
                                      minimum=args.min, maximum=args.max,
                                      epsilon=args.eps)
 
