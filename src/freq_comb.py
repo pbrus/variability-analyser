@@ -6,7 +6,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
 
 
-def coefficients_iterator(size, minimum=-10, maximum=10):
+def coefficients_generator(size, minimum=-10, maximum=10):
     range_list = []
 
     for _ in range(size):
@@ -17,7 +17,7 @@ def coefficients_iterator(size, minimum=-10, maximum=10):
 
 def linear_combination(frequencies, frequency, minimum=-10, maximum=10,
                        epsilon=1e-6):
-    coeff_iter = coefficients_iterator(len(frequencies), minimum, maximum)
+    coeff_iter = coefficients_generator(len(frequencies), minimum, maximum)
     frequencies = np.array(frequencies)
     coefficients_array = np.zeros(len(frequencies), dtype=bool)
     coeff_sum = np.inf
