@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from scipy.optimize import least_squares
+from scipy.optimize import curve_fit
+from math import sqrt, pow, atan2
 from copy import deepcopy
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
@@ -24,8 +25,52 @@ def approximate_sines_sum(frequencies):
 
     return sines_sum
 
+def amplitude(coefficients):
+    pow2 = lambda x: pow(x, 2)
 
+    return sqrt(sum(map(pow2, coefficients)))
 
+def phase(coefficients):
+    ph = atan2(*coefficients[::-1])
+
+    if ph < 0.0:
+       ph += 2*np.pi
+
+    return ph
+
+def convert_linear_parameters(parameters):
+
+    for param in parameters.reshape(3,-1):
+        amp = amplitude(param[:2])
+        ph = phase(param[:2])
+        param[0] = amp
+        param[1] = ph
+
+    return parameters
+
+def add_frequencies(parameters, frequencies):
+    updated_parameters = np.empty(0).reshape(0,4)
+
+    for parameter, frequency in zip(parameters.reshape(-1,3), frequencies):
+        parameter = np.insert(parameter, 1, frequency)
+        updated_parameters = np.append(updated_parameters, parameter)
+
+    return updated_parameters.reshape(-1,4)
+
+def fit_approximate_curve(lightcurve, frequencies):
+    func = approximate_sines_sum(frequencies)
+    time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
+    x0 = np.zeros(3*len(frequencies))
+    parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
+
+    return parameters
+
+def approximate_parameters(lightcurve, frequencies):
+    parameters = fit_approximate_curve(lightcurve, frequencies)
+    parameters = convert_linear_parameters(parameters)
+    parameters = add_frequencies(parameters, frequencies)
+
+    return parameters
 
 
 def fit_approximate_sine(frequency):
