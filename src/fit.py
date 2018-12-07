@@ -13,15 +13,15 @@ def approximate_sines_sum(frequencies):
 
     def sines_sum(x, *sines_parameters):
         param = sines_parameters
-        s = 0
+        func = 0
 
         for i, frequency in enumerate(frequencies):
             i *= 3
-            s += (param[i]*np.sin(2*np.pi*frequency*x)
-                  + param[i+1]*np.cos(2*np.pi*frequency*x)
-                  + param[i+2])
+            func += (param[i]*np.sin(2*np.pi*frequency*x)
+                     + param[i+1]*np.cos(2*np.pi*frequency*x)
+                     + param[i+2])
 
-        return s
+        return func
 
     return sines_sum
 
