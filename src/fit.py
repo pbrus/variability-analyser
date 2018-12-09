@@ -72,6 +72,20 @@ def approximate_parameters(lightcurve, frequencies):
 
     return parameters
 
+def final_sines_sum(linear_combination):
+
+    def sines_sum(x, *param):
+        m, n = linear_combination.shape
+        func = 0
+
+        for i in range(m):
+            frequency = np.dot(param[:n], linear_combination[i])
+            i *= 2
+            func += (param[n+i]*np.sin(2*np.pi*frequency*x + param[n+i+1]))
+
+        return func + param[-1]
+
+    return sines_sum
 
 def fit_approximate_sine(frequency):
     """
