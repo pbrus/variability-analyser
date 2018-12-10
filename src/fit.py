@@ -110,6 +110,26 @@ def frequencies_combination(frequencies):
 
     return basic_freqs, freqs_array
 
+def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
+    parameters = np.array(basic_frequencies)
+    amplitudes_phases = np.append(approximate_parameters[:,:1],
+                                  approximate_parameters[:,2:3],
+                                  axis=1).flatten()
+    parameters = np.append(parameters, amplitudes_phases)
+    parameters = np.append(parameters, approximate_parameters[:,-1].sum())
+
+    return parameters
+
+def fit_final_curve(lightcurve, frequencies):
+    approx_param = approximate_parameters(lightcurve, frequencies)
+    basic_freqs, freqs_comb = frequencies_combination(frequencies)
+    func = final_sines_sum(freqs_comb)
+    time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
+    x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
+    parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
+
+    return parameters
+
 def fit_approximate_sine(frequency):
     """
     A single sine function with a set frequency.
