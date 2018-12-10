@@ -87,6 +87,29 @@ def final_sines_sum(linear_combination):
 
     return sines_sum
 
+def split_frequencies(frequencies):
+    basic_freqs = frequencies[:1]
+    n_freqs = len(frequencies)
+
+    for i in range(n_freqs - 1):
+        if not np.any(linear_combination(basic_freqs, frequencies[i+1])):
+            basic_freqs.append(frequencies[i+1])
+
+    harmonic_freqs = [freq for freq in frequencies if freq not in basic_freqs]
+
+    return basic_freqs, harmonic_freqs
+
+def frequencies_combination(frequencies):
+    basic_freqs, harmonic_freqs = split_frequencies(frequencies)
+    freqs_array = np.diag(np.ones(len(basic_freqs), dtype=int))
+
+    for harm in harmonic_freqs:
+        linear_comb = linear_combination(basic_freqs, harm)
+        linear_comb = linear_comb.reshape(-1, len(basic_freqs))
+        freqs_array = np.append(freqs_array, linear_comb, axis=0)
+
+    return basic_freqs, freqs_array
+
 def fit_approximate_sine(frequency):
     """
     A single sine function with a set frequency.
