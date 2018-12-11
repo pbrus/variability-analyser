@@ -148,6 +148,14 @@ def final_parameters(parameters, frequencies_combination):
 def normalize_phase(phase):
     return phase - 2*np.pi*(phase//(2*np.pi))
 
+def print_parameters(parameters):
+    fmt = "{0:16.10f}"
+    print(fmt.format(parameters[0]))
+    fmt = "{0:16.10f} {1:16.10f} {2:16.10f}"
+
+    for i, par in enumerate(parameters[1:].reshape(-1,3)):
+        print(fmt.format(*par))
+
 def fit_approximate_sine(frequency):
     """
     A single sine function with a set frequency.
@@ -379,7 +387,7 @@ def save_residuals(lightcurve, parameters, filename):
     lightcurve[:,1] = residuals
     np.savetxt(filename, lightcurve, fmt="%16.6f %9.4f %7.4f")
 
-def print_parameters(parameters):
+def printt_parameters(parameters):
     """
     Print parameters of sines in a nice format:
 
