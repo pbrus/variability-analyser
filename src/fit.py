@@ -157,6 +157,31 @@ def print_parameters(parameters):
     for i, par in enumerate(parameters[1:].reshape(-1,3)):
         print(fmt.format(*par))
 
+def sines_sum(parameters):
+    par = parameters
+
+    def func(x):
+        y = 0
+
+        for i in range(len(parameters)//3):
+            i *= 3
+            y += par[i+1]*np.sin(2*np.pi*par[i+2]*x + par[i+3])
+
+        return y + par[0]
+
+    return func
+
+def substract_model(data, model):
+    data[:,1] -= model(data[:,0])
+
+    return data
+
+def save_residuals(lightcurve, parameters, filename):
+    model = sines_sum(parameters)
+    lightcurve = substract_model(lightcurve, model)
+    np.savetxt(filename, lightcurve, fmt="%16.6f %9.4f %7.4f")
+
+
 def fit_approximate_sine(frequency):
     """
     A single sine function with a set frequency.
@@ -245,7 +270,7 @@ def sine(frequency, amplitude, phase, y_intercept):
 
     return sine_function
 
-def substract_model(data, sine):
+def substract_modell(data, sine):
     """
     Substract a single sine from the data.
 
@@ -367,7 +392,7 @@ def _replace_negative_parameters(parameters):
 
     return parameters
 
-def save_residuals(lightcurve, parameters, filename):
+def save_residualss(lightcurve, parameters, filename):
     """
     For given parameters calculate a sum of sines functions. Then substract
     them from the lightcurve and save residuals to the text file.
