@@ -87,24 +87,25 @@ def final_sines_sum(linear_combination):
 
     return sines_sum
 
-def split_frequencies(frequencies):
+def split_frequencies(frequencies, epsilon):
     basic_freqs = frequencies[:1]
     n_freqs = len(frequencies)
 
     for i in range(n_freqs - 1):
-        if not np.any(linear_combination(basic_freqs, frequencies[i+1])):
+        if not np.any(linear_combination(basic_freqs, frequencies[i+1],
+                                         epsilon=epsilon)):
             basic_freqs.append(frequencies[i+1])
 
     harmonic_freqs = [freq for freq in frequencies if freq not in basic_freqs]
 
     return basic_freqs, harmonic_freqs
 
-def frequencies_combination(frequencies):
-    basic_freqs, harmonic_freqs = split_frequencies(frequencies)
+def frequencies_combination(frequencies, epsilon):
+    basic_freqs, harmonic_freqs = split_frequencies(frequencies, epsilon)
     freqs_array = np.diag(np.ones(len(basic_freqs), dtype=int))
 
     for harm in harmonic_freqs:
-        linear_comb = linear_combination(basic_freqs, harm)
+        linear_comb = linear_combination(basic_freqs, harm, epsilon=epsilon)
         linear_comb = linear_comb.reshape(-1, len(basic_freqs))
         freqs_array = np.append(freqs_array, linear_comb, axis=0)
 
@@ -120,9 +121,9 @@ def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
 
     return parameters
 
-def fit_final_curve(lightcurve, frequencies):
+def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     approx_param = approximate_parameters(lightcurve, frequencies)
-    basic_freqs, freqs_comb = frequencies_combination(frequencies)
+    basic_freqs, freqs_comb = frequencies_combination(frequencies, epsilon)
     func = final_sines_sum(freqs_comb)
     time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
     x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
