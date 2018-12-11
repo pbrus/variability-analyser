@@ -127,8 +127,26 @@ def fit_final_curve(lightcurve, frequencies):
     time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
     x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
     parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
+    parameters = final_parameters(parameters, freqs_comb)
 
     return parameters
+
+def final_parameters(parameters, frequencies_combination):
+    base_size = frequencies_combination.shape[1]
+    param = np.array(parameters[-1])
+    freqs = np.dot(parameters[:base_size], frequencies_combination.T)
+    n_parameters = int((len(parameters) - base_size - 1)/2)
+
+    for i in range(n_parameters):
+        param = np.append(param, parameters[2*i + base_size])
+        param = np.append(param, freqs[i])
+        param = np.append(param,
+                          normalize_phase(parameters[2*i + 1 + base_size]))
+
+    return param
+
+def normalize_phase(phase):
+    return phase - 2*np.pi*(phase//(2*np.pi))
 
 def fit_approximate_sine(frequency):
     """
