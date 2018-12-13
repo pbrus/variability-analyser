@@ -3,10 +3,13 @@
 import numpy as np
 from scipy.optimize import curve_fit
 from math import sqrt, pow, atan2
-from copy import deepcopy
+from warnings import filterwarnings
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
 from freq_comb import coefficients_generator, linear_combination
+
+filterwarnings("ignore",
+               message="Covariance of the parameters could not be estimated")
 
 
 def approximate_sines_sum(frequencies):
@@ -14,7 +17,7 @@ def approximate_sines_sum(frequencies):
     For given frequencies calculate a parameterized sum of sines. Each sine
     function is linearized, i.e.: A*sin(2*pi*x + fi) + y0 is equal:
     A1*sin(2*pi*x) + A2*cos(2*pi*x) + y0,
-    where A = sqrt(A1^2 + A2^2), arctg(fi)=C/B
+    where A = sqrt(A1^2 + A2^2), arctg(fi)=A2/A1
 
     Parameters
     ----------
@@ -95,7 +98,7 @@ def convert_linear_parameters(parameters):
     parameters : ndarray
         An array with replaced coefficients by amplitudes and phases.
     """
-    for param in parameters.reshape(3,-1):
+    for param in parameters.reshape(-1,3):
         amp = amplitude(param[:2])
         ph = phase(param[:2])
         param[0] = amp
@@ -500,6 +503,18 @@ if __name__ == "__main__":
         type=str
     )
 
+    argparser.add_argument(
+        '--eps',
+        help=dedent('''\
+        Accuracy of comparison of frequencies.
+        (default = 1e-3)
+
+        '''),
+        metavar='eps',
+        type=float,
+        default=1e-3
+    )
+
     args = argparser.parse_args()
     try:
         lightcurve = np.genfromtxt(args.lightcurve)
@@ -507,11 +522,9 @@ if __name__ == "__main__":
         print(error)
         exit()
 
-    lightcurve_org = deepcopy(lightcurve)
     frequencies = args.freq
-    sines_parameters = approximate_sines_parameters(lightcurve, frequencies)
-    final_parameters = final_fitting(lightcurve_org, sines_parameters)
-    print_parameters(final_parameters)
+    parameters = fit_final_curve(lightcurve, frequencies, args.eps)
+    print_parameters(parameters)
 
     if args.resid != None:
-        save_residuals(lightcurve_org, final_parameters, args.resid)
+        save_residuals(lightcurve, parameters, args.resid)
