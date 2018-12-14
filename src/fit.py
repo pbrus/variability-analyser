@@ -317,8 +317,9 @@ def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     parameters : ndarray
         An array with parameters which describe fitted function.
     """
-    approx_param = approximate_parameters(lightcurve, frequencies)
     basic_freqs, freqs_comb = frequencies_combination(frequencies, epsilon)
+    approx_param = approximate_parameters(lightcurve,
+                                          np.dot(basic_freqs, freqs_comb.T))
     func = final_sines_sum(freqs_comb)
     time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
     x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
