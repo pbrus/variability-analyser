@@ -6,6 +6,8 @@ from scipy.optimize import curve_fit
 from copy import deepcopy
 from warnings import filterwarnings
 from os.path import basename, splitext, dirname, join
+from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
+from textwrap import dedent
 
 filterwarnings("ignore",
                message="Covariance of the parameters could not be estimated")
@@ -99,7 +101,7 @@ def display_plot(phase, magnitude, model=None):
 
     plt.show()
 
-def save_plot(phase, magnitdue, model=None):
+def save_plot(phase, magnitdue, filename, model=None):
     figure = plt.figure(figsize=(10, 5), dpi=150)
     figure.add_subplot(111)
     _draw_phase(phase, magnitude)
@@ -109,3 +111,114 @@ def save_plot(phase, magnitdue, model=None):
 
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
+
+
+if __name__ == "__main__":
+    argparser = ArgumentParser(
+        prog='phase.py',
+        description='>> Phase a lightcurve <<',
+        epilog='Copyright (c) 2018 Przemysław Bruś',
+        formatter_class=RawTextHelpFormatter
+    )
+
+    argparser.add_argument(
+        'lightcurve',
+        help=dedent('''\
+        The name of a file which stores lightcurve data.
+        ------------------------------------
+        The file must contain three columns:
+        time magnitude magnitude_error
+
+        ''')
+    )
+
+    argparser.add_argument(
+        'frequency',
+        help=dedent('''\
+        A value of frequency which phases the lightcurve.
+
+        '''),
+        type=float
+    )
+
+    argparser.add_argument(
+        '-p',
+        help=dedent('''\
+        The positional argument "frequency" is a period.
+
+        '''),
+        action='store_true'
+    )
+
+    argparser.add_argument(
+        '--phase',
+        help=dedent('''\
+        The number of phases.
+        (default = 2)
+
+        '''),
+        metavar="N",
+        type=int,
+        default=2
+    )
+
+    argparser.add_argument(
+        '--model',
+        help=dedent('''\
+        A name of the file with a model defined as:
+
+        y_intercept
+        amplitude1 frequency1 phase1
+        amplitude2 frequency2 phase2
+        amplitude3 frequency3 phase3
+        ...
+
+        The amplitude, frequency and phase describe a single sine
+        which the model is build of.
+
+        '''),
+        metavar="filename",
+        type=str
+    )
+
+    argparser.add_argument(
+        '--display',
+        help=dedent('''\
+        Display a plot.
+
+        '''),
+        action='store_true'
+    )
+
+    argparser.add_argument(
+        '--image',
+        help=dedent('''\
+        Save a plot to the PNG file.
+        The name of the image will be the same as for output file.
+
+        '''),
+        action='store_true'
+    )
+
+    args = argparser.parse_args()
+
+    if args.p:
+        frequency = 1/args.frequency
+    else:
+        frequency = args.frequency
+
+    try:
+        phase, magnitude = prepare_data(args.lightcurve, frequency, args.phase)
+        if args.model:
+            model = get_model(args.model, frequency, phase, magnitude)
+        else:
+            model = None
+    except (ArgumentTypeError, OSError) as error:
+        print(error)
+        exit()
+
+    if args.display:
+        display_plot(phase, magnitude, model)
+
+    if args.image:
+        save_plot(phase, magnitude, args.lightcurve, model)
