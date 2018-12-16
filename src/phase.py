@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from copy import deepcopy
 from warnings import filterwarnings
+from os.path import basename, splitext, dirname, join
 
 filterwarnings("ignore",
                message="Covariance of the parameters could not be estimated")
@@ -37,7 +38,7 @@ def multiply_phase(phase, magnitude, factor):
     return phase, magnitude
 
 def prepare_data(filename, frequency, phases_number):
-    time, magnitude, error = read_lightcurve(filename)
+    time, magnitude, _ = read_lightcurve(filename)
     phase = time_to_phase(time, 1/frequency)
     phase, magnitude = multiply_phase(phase, magnitude, phases_number)
 
@@ -65,7 +66,23 @@ def sines_sum(sines_parameters, y_intercept, frequency):
 
     return sines
 
-def _draw_phase(phase, magnitude, markersize=2):
+def split_filename(filename):
+    """
+    Split a filename into a name and en extenstion.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file.
+
+    Returns
+    -------
+    tuple
+        A tuple: (basename, extension).
+    """
+    return splitext(basename(filename))
+
+def _draw_phase(phase, magnitude, markersize=4):
     plt.xlabel("Phase")
     plt.ylabel("Brightness [mag]")
     plt.gca().invert_yaxis()
@@ -81,3 +98,14 @@ def display_plot(phase, magnitude, model=None):
         _draw_model(*model)
 
     plt.show()
+
+def save_plot(phase, magnitdue, model=None):
+    figure = plt.figure(figsize=(10, 5), dpi=150)
+    figure.add_subplot(111)
+    _draw_phase(phase, magnitude)
+
+    if model != None:
+        _draw_model(*model)
+
+    png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
+    figure.savefig(png_filename)
