@@ -250,7 +250,7 @@ def split_filename(filename):
 def _draw_plot(time, magnitude, spline_coordinates, centers, markersize=2):
     x_spline, y_spline = spline_coordinates
 
-    plt.xlabel("Time [JD]")
+    plt.xlabel("Time")
     plt.ylabel("Brightness [mag]")
     plt.gca().invert_yaxis()
     plt.plot(x_spline, len(x_spline)*[magnitude.mean()],

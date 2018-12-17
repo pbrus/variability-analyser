@@ -144,7 +144,7 @@ def split_filename(filename):
     return splitext(basename(filename))
 
 def _draw_plot(ax, data, lower_line, upper_line, markersize=2):
-    ax.set_xlabel("Time [JD]")
+    ax.set_xlabel("Time")
     ax.set_ylabel("Brightness [mag]")
     ax.invert_yaxis()
 
