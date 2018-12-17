@@ -508,7 +508,7 @@ if __name__ == "__main__":
         '--eps',
         help=dedent('''\
         Accuracy of comparison of frequencies.
-        (default = 1e-3)
+        (default = 0.001)
 
         '''),
         metavar='eps',

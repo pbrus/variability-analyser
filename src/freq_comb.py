@@ -105,6 +105,7 @@ if __name__ == "__main__":
         '--min',
         help=dedent('''\
         A minimum value (int) of all coefficients.
+        (default = -10)
 
         '''),
         metavar='min',
@@ -116,6 +117,7 @@ if __name__ == "__main__":
         '--max',
         help=dedent('''\
         A maximum value (int) of all coefficients.
+        (default = 10)
 
         '''),
         metavar='max',
@@ -128,6 +130,7 @@ if __name__ == "__main__":
         help=dedent('''\
         A comparison accuracy of a single frequency
         and linear combination.
+        (default = 0.001)
 
         '''),
         metavar='eps',
