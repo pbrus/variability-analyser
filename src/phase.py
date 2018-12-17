@@ -182,7 +182,7 @@ def sines_sum(sines_parameters, y_intercept, frequency):
     def sines(x, x0):
         y = 0
 
-        for par in sines_parameters:
+        for par in sines_parameters.reshape(-1,3):
             y += par[0]*np.sin(2*np.pi*par[1]/frequency*(x - x0) + par[2])
 
         return y + y_intercept
@@ -236,7 +236,7 @@ def display_plot(phase, magnitude, model=None):
 
 def save_plot(phase, magnitdue, filename, model=None):
     """
-    Save a phased lightcurve to the file.
+    Save an image with a phased lightcurve to the file.
 
     Parameters
     ----------
@@ -245,7 +245,7 @@ def save_plot(phase, magnitdue, filename, model=None):
     magnitude : ndarray
         An array which represents a magnitude vector.
     filename : str
-        The name of a file which will store a phased lightcurve.
+        The name of a file which will store the image of a phased lightcurve.
     model : tuple
         X, Y coordinates of the model.
     """
@@ -258,6 +258,22 @@ def save_plot(phase, magnitdue, filename, model=None):
 
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
+
+def save_phased_lightcurve(phase, magnitude, filename):
+    """
+    Save a phased lightcurve to the file.
+
+    Parameters
+    ----------
+    phase : ndarray
+        An array which stores a phase vector.
+    magnitude : ndarray
+        An array which represents a magnitude vector.
+    filename : str
+        The name of a file which will store a phased lightcurve.
+    """
+    result = np.append(phase.reshape(1,-1), magnitude.reshape(1,-1), axis=0)
+    np.savetxt(args.save, result.T, fmt="%16.6f %9.4f")
 
 
 if __name__ == "__main__":
@@ -329,6 +345,16 @@ if __name__ == "__main__":
     )
 
     argparser.add_argument(
+        '--save',
+        help=dedent('''\
+        Save the phased lightcurve to the file.
+
+        '''),
+        metavar="filename",
+        type=str
+    )
+
+    argparser.add_argument(
         '--display',
         help=dedent('''\
         Display a plot.
@@ -363,6 +389,9 @@ if __name__ == "__main__":
     except (ArgumentTypeError, OSError) as error:
         print(error)
         exit()
+
+    if args.save:
+        save_phased_lightcurve(phase, magnitude, args.save)
 
     if args.display:
         display_plot(phase, magnitude, model)
