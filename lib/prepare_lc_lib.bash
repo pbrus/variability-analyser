@@ -1,7 +1,8 @@
 function rearrange_columns_lightcurve()
 {
     awk '{
-        print $'${LC_TIME_COLUMN}', $'${LC_MAG_COLUMN}', $'${LC_ERR_COLUMN}'
+        printf("%f %f %f\n", $'${LC_TIME_COLUMN}'-'${LC_TIME_PREFIX}', \
+        $'${LC_MAG_COLUMN}', $'${LC_ERR_COLUMN}')
     }' $1 > $1.tmp
 }
 
