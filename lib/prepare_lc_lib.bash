@@ -59,3 +59,8 @@ function trim()
         ${1/${LC_DIR}/${LC_TRIM_DIR}} --display --image
     fi
 }
+
+function copy_lightcurve()
+{
+    cp ${1/${LC_DIR}/${LC_TRIM_DIR}} $2
+}
