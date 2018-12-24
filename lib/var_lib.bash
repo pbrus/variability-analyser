@@ -58,3 +58,27 @@ function display_specific_task()
         ;;
     esac
 }
+
+function calculate_fourier_transform()
+{
+    if [ -e ${RESID_FILE} ]
+    then
+        fourier_transform ${RESID_FILE}
+    else
+        fourier_transform ${lightcurve_filename}
+    fi
+}
+
+function fourier_transform()
+{
+    local step=`awk '{if (NR==1) t0=$1} END {
+                printf("%f\n", '${FT_STEP_FACTOR}'/($1-t0))}' $1`
+
+    fnpeaks -f $1 ${FT_START} ${FT_STOP} ${step} > /dev/null
+
+    local fourier_transform_file=`basename -s ${LC_SUFFIX} $1`".trf"
+    local fourier_transform_max_file=`basename -s ${LC_SUFFIX} $1`".max"
+
+    grep -v "%" ${fourier_transform_max_file}
+    plt_pdgrm.py ${fourier_transform_file} --display
+}
