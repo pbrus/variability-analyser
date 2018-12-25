@@ -82,3 +82,32 @@ function fourier_transform()
     grep -v "%" ${fourier_transform_max_file}
     plt_pdgrm.py ${fourier_transform_file} --display
 }
+
+function edit_frequencies_table()
+{
+    ${EDITOR} frequencies_table
+    fit.py ${lightcurve_filename} --freq `cat frequencies_table` \
+    --resid ${RESID_FILE} > ${MODEL_FILE}
+
+    display_current_model
+}
+
+function display_current_model()
+{
+    print_sines_parameters
+    awk 'NR > 1 {print $0}' ${MODEL_FILE}
+    print_model_yintercept
+    awk 'NR == 1 {print $0}' ${MODEL_FILE}
+}
+
+function phase_lightcurve()
+{
+    local frequency
+
+    print_choose_frequency
+    cat frequencies_table
+    print_hashbar
+    read frequency
+
+    phase.py ${lightcurve_filename} ${frequency} --model ${MODEL_FILE} --display
+}
