@@ -122,3 +122,15 @@ function trim_residuals()
 {
     trim.py ${RESID_FILE} ${RESID_FILE} --display
 }
+
+function restart_analysis()
+{
+    local fourier_transform_file=`basename -s ${LC_SUFFIX} \
+                                  ${lightcurve_filename}`".trf"
+    local fourier_transform_max_file=`basename -s ${LC_SUFFIX} \
+                                  ${lightcurve_filename}`".max"
+
+    remove_files_or_dirs ${fourier_transform_file} \
+                         ${fourier_transform_max_file} model${LC_SUFFIX} \
+                         resid${LC_SUFFIX} resid.trf resid.max frequencies_table
+}
