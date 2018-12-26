@@ -111,3 +111,14 @@ function phase_lightcurve()
 
     phase.py ${lightcurve_filename} ${frequency} --model ${MODEL_FILE} --display
 }
+
+function detrend_residuals()
+{
+    detrend_data ${RESID_FILE}
+    remove_files_or_dirs ${RESID_FILE/${LC_SUFFIX}/.png}
+}
+
+function trim_residuals()
+{
+    trim.py ${RESID_FILE} ${RESID_FILE} --display
+}
