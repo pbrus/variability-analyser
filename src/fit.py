@@ -523,7 +523,7 @@ if __name__ == "__main__":
         print(error)
         exit()
 
-    frequencies = args.freq
+    frequencies = sorted(args.freq)
     parameters = fit_final_curve(lightcurve, frequencies, args.eps)
     print_parameters(parameters)
 
