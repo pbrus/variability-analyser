@@ -11,7 +11,7 @@ function display_tasks()
 
     while read answer
     do
-        for option in c e p d t r q
+        for option in c e p d t f r q
         do
             if [ "$answer" == "$option" ]
             then
@@ -47,6 +47,10 @@ function display_specific_task()
         ;;
     t)
         trim_residuals
+        display_tasks
+        ;;
+    f)
+        change_fourier_parameters
         display_tasks
         ;;
     r)
@@ -121,6 +125,26 @@ function detrend_residuals()
 function trim_residuals()
 {
     trim.py ${RESID_FILE} ${RESID_FILE} --display
+}
+
+function change_fourier_parameters()
+{
+    set_fourier_parameter "FT_START"
+    set_fourier_parameter "FT_STOP"
+    set_fourier_parameter "FT_STEP_FACTOR"
+}
+
+function set_fourier_parameter()
+{
+    local parameter
+
+    print_fourier_parameter $1
+    read parameter
+
+    if [ "${parameter}" != "" ]
+    then
+        eval $1=${parameter}
+    fi
 }
 
 function restart_analysis()

@@ -25,6 +25,7 @@ function print_tasks()
     echo -e " ${RED}p${RESET} - phase the lightcurve"
     echo -e " ${RED}d${RESET} - detrend the residuals"
     echo -e " ${RED}t${RESET} - trim the residuals"
+    echo -e " ${RED}f${RESET} - change fourier parameters"
     echo -e " ${RED}r${RESET} - restart the analysis"
     echo -e " ${RED}q${RESET} - quit a program"
     echo -e ""
@@ -49,4 +50,16 @@ function print_choose_frequency()
 function print_hashbar()
 {
     echo -e " ${GREEN}---------------${RESET}"
+}
+
+function print_leave_value_enter()
+{
+    echo -e " No changes? Press ENTER"
+}
+
+function print_fourier_parameter()
+{
+    echo -e " ${GREEN}$1${RESET} = ${!1}"
+    print_leave_value_enter
+    print_hashbar
 }
