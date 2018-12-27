@@ -104,12 +104,20 @@ function display_current_model()
     awk 'NR == 1 {print $0}' ${MODEL_FILE}
 }
 
+function display_frequencies()
+{
+    if [ -e ${MODEL_FILE} ]
+    then
+        awk 'NR > 1 {print $2}' ${MODEL_FILE}
+    fi
+}
+
 function phase_lightcurve()
 {
     local frequency
 
     print_choose_frequency
-    cat frequencies_table
+    display_frequencies
     print_hashbar
     read frequency
 

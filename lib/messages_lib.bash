@@ -44,7 +44,7 @@ function print_model_yintercept()
 
 function print_choose_frequency()
 {
-    echo -e " ${RED}Choose the frequency from the table:${RESET}"
+    echo -e " ${RED}Choose the frequency:${RESET}"
 }
 
 function print_hashbar()
