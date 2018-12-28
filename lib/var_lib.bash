@@ -11,7 +11,7 @@ function display_tasks()
 
     while read answer
     do
-        for option in c e p d t f r q
+        for option in c e p d t f r s q
         do
             if [ "$answer" == "$option" ]
             then
@@ -56,6 +56,10 @@ function display_specific_task()
     r)
         restart_analysis
         display_tasks
+        ;;
+    s)
+        save_results
+        clean_working_dir
         ;;
     q)
         exit
@@ -159,6 +163,60 @@ function set_fourier_parameter()
     fi
 }
 
+function save_results()
+{
+    local answer
+
+    print_save_results
+    print_question_about_variability
+
+    while read answer
+    do
+        if [ "$answer" == "y" ]
+        then
+            print_phase_lightcurve
+            save_all_results
+            break
+        elif [ "$answer" == "n" ]
+        then
+            log_constant_object
+            break
+        else
+            print_question_about_variability
+            continue
+        fi
+    done
+}
+
+function save_all_results()
+{
+    phase_lightcurve "--image"
+    add_comment_to_log
+    copy_results
+}
+
+function add_comment_to_log()
+{
+    local comment
+
+    print_write_comment
+    print_hashbar
+    read comment
+    echo -e "${lightcurve_filename}: ${comment}" >> ${RESULTS_DIR}/${RESULTS_LOG}
+}
+
+function copy_results()
+{
+    cp ${MODEL_FILE} ${RESULTS_DIR}/${lightcurve_filename/${LC_SUFFIX}/.mdl}
+    mv ${lightcurve_filename/${LC_SUFFIX}/.png} ${RESULTS_DIR}/.
+}
+
+function log_constant_object()
+{
+    local comment="${lightcurve_filename}: constant"
+    echo -e ${comment} >> ${RESULTS_DIR}/${RESULTS_LOG}
+}
+
 function restart_analysis()
 {
     local fourier_transform_file=`basename -s ${LC_SUFFIX} \
@@ -169,4 +227,10 @@ function restart_analysis()
     remove_files_or_dirs ${fourier_transform_file} \
                          ${fourier_transform_max_file} model${LC_SUFFIX} \
                          resid${LC_SUFFIX} resid.trf resid.max frequencies_table
+}
+
+function clean_working_dir()
+{
+    restart_analysis
+    remove_files_or_dirs ${lightcurve_filename}
 }

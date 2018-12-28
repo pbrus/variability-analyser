@@ -27,6 +27,7 @@ function print_tasks()
     echo -e " ${RED}t${RESET} - trim the residuals"
     echo -e " ${RED}f${RESET} - change fourier parameters"
     echo -e " ${RED}r${RESET} - restart the analysis"
+    echo -e " ${RED}s${RESET} - save the results"
     echo -e " ${RED}q${RESET} - quit a program"
     echo -e ""
 }
@@ -62,4 +63,27 @@ function print_fourier_parameter()
     echo -e " ${GREEN}$1${RESET} = ${!1}"
     print_leave_value_enter
     print_hashbar
+}
+
+function print_save_results()
+{
+    echo -e " ${BROWN}Saving the results to the \"${RESULTS_DIR}\" directory...\
+              ${RESET}\n"
+}
+
+function print_question_about_variability()
+{
+    echo -e " ${GREEN}Is the object variable?${RESET}"
+    print_hashbar
+}
+
+function print_phase_lightcurve()
+{
+    echo -e " ${GREEN}Phase the lightcurve${RESET}"
+}
+
+function print_write_comment()
+{
+    echo -e " ${GREEN}Write a comment about ${lightcurve_filename} object:\
+              ${RESET}"
 }
