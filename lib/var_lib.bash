@@ -38,7 +38,7 @@ function display_specific_task()
         display_tasks
         ;;
     p)
-        phase_lightcurve
+        phase_lightcurve "--display"
         display_tasks
         ;;
     d)
@@ -125,7 +125,7 @@ function phase_lightcurve()
     print_hashbar
     read frequency
 
-    phase.py ${lightcurve_filename} ${frequency} --model ${MODEL_FILE} --display
+    phase.py ${lightcurve_filename} ${frequency} --model ${MODEL_FILE} $1
 }
 
 function detrend_residuals()
