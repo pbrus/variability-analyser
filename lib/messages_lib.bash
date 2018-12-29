@@ -73,7 +73,7 @@ function print_save_results()
 
 function print_question_about_variability()
 {
-    echo -e " ${GREEN}Is the object variable?${RESET}"
+    echo -e " ${RED}Is the object variable?${RESET}"
     print_hashbar
 }
 
@@ -84,6 +84,6 @@ function print_phase_lightcurve()
 
 function print_write_comment()
 {
-    echo -e " ${GREEN}Write a comment about ${lightcurve_filename} object:\
+    echo -e " ${RED}Write a comment about ${lightcurve_filename} object:\
               ${RESET}"
 }
