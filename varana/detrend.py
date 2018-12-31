@@ -69,7 +69,7 @@ def sigma_clipping_magnitude(data):
 
 def too_much_points_rejected(all_points_number, current_points_number):
     """
-    Check whether the percentage ratio of size of two sets is to high.
+    Check whether the percentage ratio of size of two sets is too high.
 
     Parameters
     ----------
