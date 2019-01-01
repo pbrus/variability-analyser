@@ -1,12 +1,8 @@
-#!/usr/bin/env python3
-
 import numpy as np
 from scipy.optimize import curve_fit
 from math import sqrt, pow, atan2
 from warnings import filterwarnings
-from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
-from textwrap import dedent
-from freq_comb import coefficients_generator, linear_combination
+from varana.freq_comb import coefficients_generator, linear_combination
 
 filterwarnings("ignore",
                message="Covariance of the parameters could not be estimated")
@@ -461,71 +457,3 @@ def save_residuals(lightcurve, parameters, filename):
     model = sines_sum(parameters)
     lightcurve = substract_model(lightcurve, model)
     np.savetxt(filename, lightcurve, fmt="%16.6f %9.4f %7.4f")
-
-
-if __name__ == "__main__":
-    argparser = ArgumentParser(
-        prog='fit.py',
-        description='>> Fit a sum of sines to the lightcurve <<',
-        epilog='Copyright (c) 2018 Przemysław Bruś',
-        formatter_class=RawTextHelpFormatter
-    )
-
-    argparser.add_argument(
-        'lightcurve',
-        help=dedent('''\
-        The name of a file which stores lightcurve data.
-        ------------------------------------
-        The file must contain three columns:
-        time magnitude magnitude_error
-
-        ''')
-    )
-
-    argparser.add_argument(
-        '--freq',
-        help=dedent('''\
-        A list of frequencies for each sine.
-
-        '''),
-        nargs='+',
-        metavar='f1',
-        type=float,
-        required=True
-    )
-
-    argparser.add_argument(
-        '--resid',
-        help=dedent('''\
-        A name of the file storing residuals.
-
-        '''),
-        metavar='filename',
-        type=str
-    )
-
-    argparser.add_argument(
-        '--eps',
-        help=dedent('''\
-        Accuracy of comparison of frequencies.
-        (default = 0.001)
-
-        '''),
-        metavar='eps',
-        type=float,
-        default=1e-3
-    )
-
-    args = argparser.parse_args()
-    try:
-        lightcurve = np.genfromtxt(args.lightcurve)
-    except OSError as error:
-        print(error)
-        exit()
-
-    frequencies = sorted(args.freq)
-    parameters = fit_final_curve(lightcurve, frequencies, args.eps)
-    print_parameters(parameters)
-
-    if args.resid != None:
-        save_residuals(lightcurve, parameters, args.resid)
