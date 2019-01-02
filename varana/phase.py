@@ -1,3 +1,7 @@
+"""
+Phase a lightcurve.
+
+"""
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -24,6 +28,7 @@ def read_lightcurve(filename):
         Each element represents a single column.
     """
     return np.loadtxt(filename, unpack=True)
+
 
 def read_model(filename):
     """
@@ -54,6 +59,7 @@ def read_model(filename):
 
     return y_intercept, parameters
 
+
 def time_to_phase(time, period):
     """
     Convert time to phase.
@@ -75,6 +81,7 @@ def time_to_phase(time, period):
     phase = time/period - time//period
 
     return phase
+
 
 def multiply_phase(phase, magnitude, factor):
     """
@@ -103,6 +110,7 @@ def multiply_phase(phase, magnitude, factor):
 
     return phase, magnitude
 
+
 def prepare_data(filename, frequency, phases_number):
     """
     Phase a lightcurve with the frequency.
@@ -126,6 +134,7 @@ def prepare_data(filename, frequency, phases_number):
     phase, magnitude = multiply_phase(phase, magnitude, phases_number)
 
     return phase, magnitude
+
 
 def get_model(filename, frequency, phase, magnitude):
     """
@@ -156,6 +165,7 @@ def get_model(filename, frequency, phase, magnitude):
 
     return X, model(X, x0)
 
+
 def sines_sum(sines_parameters, y_intercept, frequency):
     """
     Define a sum of sines.
@@ -178,12 +188,13 @@ def sines_sum(sines_parameters, y_intercept, frequency):
     def sines(x, x0):
         y = 0
 
-        for par in sines_parameters.reshape(-1,3):
+        for par in sines_parameters.reshape(-1, 3):
             y += par[0]*np.sin(2*np.pi*par[1]/frequency*(x - x0) + par[2])
 
         return y + y_intercept
 
     return sines
+
 
 def split_filename(filename):
     """
@@ -201,14 +212,17 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
+
 def _draw_phase(phase, magnitude, markersize=4):
     plt.xlabel("Phase")
     plt.ylabel("Brightness [mag]")
     plt.gca().invert_yaxis()
     plt.plot(phase, magnitude, '.', alpha=0.5, markersize=markersize)
 
+
 def _draw_model(X, Y):
     plt.plot(X, Y, 'r-', alpha=0.7)
+
 
 def display_plot(phase, magnitude, model=None):
     """
@@ -225,10 +239,11 @@ def display_plot(phase, magnitude, model=None):
     """
     _draw_phase(phase, magnitude, 6)
 
-    if model != None:
+    if model is not None:
         _draw_model(*model)
 
     plt.show()
+
 
 def save_plot(phase, magnitdue, filename, model=None):
     """
@@ -249,11 +264,13 @@ def save_plot(phase, magnitdue, filename, model=None):
     figure.add_subplot(111)
     _draw_phase(phase, magnitude)
 
-    if model != None:
+    if model is not None:
         _draw_model(*model)
 
-    png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
+    png_filename = join(dirname(filename), split_filename(filename)[0]
+                        + ".png")
     figure.savefig(png_filename)
+
 
 def save_phased_lightcurve(phase, magnitude, filename):
     """
@@ -268,5 +285,5 @@ def save_phased_lightcurve(phase, magnitude, filename):
     filename : str
         The name of a file which will store a phased lightcurve.
     """
-    result = np.append(phase.reshape(1,-1), magnitude.reshape(1,-1), axis=0)
+    result = np.append(phase.reshape(1, -1), magnitude.reshape(1, -1), axis=0)
     np.savetxt(args.save, result.T, fmt="%16.6f %9.4f")

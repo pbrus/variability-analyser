@@ -1,3 +1,7 @@
+"""
+Detrend a lightcurve removing seasonal deviations.
+
+"""
 import matplotlib.pyplot as plt
 from numpy import genfromtxt, arange, std, delete, where, stack, savetxt
 from scipy.interpolate import InterpolatedUnivariateSpline as spline
@@ -25,6 +29,7 @@ def valid_seasons_amount(seasons_amount):
     else:
         return seasons_amount
 
+
 def get_data(filename):
     """
     Alias for the numpy.genfromtxt function.
@@ -40,6 +45,7 @@ def get_data(filename):
         The data from the input file stored in an ndarray object.
     """
     return genfromtxt(filename)
+
 
 def sigma_clipping_magnitude(data):
     """
@@ -57,11 +63,12 @@ def sigma_clipping_magnitude(data):
         The ndarray without clipped points in the second column.
     """
     updated_data = delete(
-        data, where((data[:,1] < data[:,1].mean() - 3*std(data[:,1])) |
-                    (data[:,1] > data[:,1].mean() + 3*std(data[:,1]))),
+        data, where((data[:, 1] < data[:, 1].mean() - 3*std(data[:, 1])) |
+                    (data[:, 1] > data[:, 1].mean() + 3*std(data[:, 1]))),
         axis=0)
 
     return updated_data
+
 
 def too_much_points_rejected(all_points_number, current_points_number):
     """
@@ -84,6 +91,7 @@ def too_much_points_rejected(all_points_number, current_points_number):
     else:
         return False
 
+
 def warn_rejected_points(filename):
     """
     Print a warning for the file.
@@ -94,6 +102,7 @@ def warn_rejected_points(filename):
         The name of the file to which the warning is concerned.
     """
     print("Rejected too many points from {0:s}".format(filename))
+
 
 def unpack_data(data):
     """
@@ -109,7 +118,8 @@ def unpack_data(data):
     tuple
         A tuple made of three (n, 1)-shaped ndarrays.
     """
-    return data[:,0], data[:,1], data[:,2]
+    return data[:, 0], data[:, 1], data[:, 2]
+
 
 def calculate_kmeans(time, magnitude, error_magnitude, clusters_number=2):
     """
@@ -138,6 +148,7 @@ def calculate_kmeans(time, magnitude, error_magnitude, clusters_number=2):
 
     return kmeans
 
+
 def sorted_centers(kmeans):
     """
     Sort centers by the first coordinate in the KMeans object.
@@ -152,7 +163,8 @@ def sorted_centers(kmeans):
     ndarray
         Sorted values in KMeans.cluster_centers_ by the first column.
     """
-    return kmeans.cluster_centers_[kmeans.cluster_centers_[:,0].argsort()]
+    return kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
+
 
 def spline_order(seasons_amount):
     """
@@ -174,6 +186,7 @@ def spline_order(seasons_amount):
     else:
         return 3
 
+
 def spline_function(points, order=3):
     """
     Determine a spline function for given points.
@@ -191,7 +204,8 @@ def spline_function(points, order=3):
     function
         The spline function fitted to the points.
     """
-    return spline(points[:,0], points[:,1], k=order)
+    return spline(points[:, 0], points[:, 1], k=order)
+
 
 def x_domain_spline(time):
     """
@@ -208,6 +222,7 @@ def x_domain_spline(time):
         The transformed time vector.
     """
     return arange(time.min(), time.max(), (time.max() - time.min())/len(time))
+
 
 def y_domain_spline(spline_function, x_domain_spline):
     """
@@ -227,6 +242,7 @@ def y_domain_spline(spline_function, x_domain_spline):
     """
     return spline_function(x_domain_spline)
 
+
 def split_filename(filename):
     """
     Split a filename into a name and en extenstion.
@@ -243,6 +259,7 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
+
 def _draw_plot(time, magnitude, spline_coordinates, centers, markersize=2):
     x_spline, y_spline = spline_coordinates
 
@@ -255,6 +272,7 @@ def _draw_plot(time, magnitude, spline_coordinates, centers, markersize=2):
     plt.plot(x_spline, y_spline, 'r--', linewidth=1.5)
     for center in centers:
         plt.plot(center[0], center[1], 'r.', markersize=15)
+
 
 def display_plot(time, magnitude, spline_coordinates, centers):
     """
@@ -273,6 +291,7 @@ def display_plot(time, magnitude, spline_coordinates, centers):
     """
     _draw_plot(time, magnitude, spline_coordinates, centers, 4)
     plt.show()
+
 
 def save_plot(time, magnitude, spline_coordinates, centers, filename):
     """
@@ -294,8 +313,10 @@ def save_plot(time, magnitude, spline_coordinates, centers, filename):
     figure = plt.figure(figsize=(10, 5), dpi=150)
     figure.add_subplot(111)
     _draw_plot(time, magnitude, spline_coordinates, centers)
-    png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
+    png_filename = join(dirname(filename), split_filename(filename)[0]
+                        + ".png")
     figure.savefig(png_filename)
+
 
 def detrend_data(data, spline, mean_magnitude):
     """
@@ -316,5 +337,5 @@ def detrend_data(data, spline, mean_magnitude):
     data : ndarray
         Updated data.
     """
-    data[:,1] = data[:,1] - spline(data[:,0]) + mean_magnitude
+    data[:, 1] = data[:, 1] - spline(data[:, 0]) + mean_magnitude
     return data

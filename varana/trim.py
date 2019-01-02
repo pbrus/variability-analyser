@@ -1,3 +1,7 @@
+"""
+Trim a lightcurve using the sigma clipping or a manual rejection.
+
+"""
 import matplotlib.pyplot as plt
 import numpy.ma as ma
 from matplotlib.widgets import Cursor
@@ -8,6 +12,7 @@ from os.path import basename, splitext, dirname, join
 
 limit = []
 lim = []
+
 
 def get_data(filename):
     """
@@ -24,6 +29,7 @@ def get_data(filename):
         The data from the input file stored in an ndarray object.
     """
     return genfromtxt(filename)
+
 
 def trim(data, lower_cut=0, upper_cut=0):
     """
@@ -53,6 +59,7 @@ def trim(data, lower_cut=0, upper_cut=0):
 
     return trim_data
 
+
 def sigma_clipping(data):
     """
     Filter the second column in the data array. Calculate a mean value (m),
@@ -71,11 +78,12 @@ def sigma_clipping(data):
     masked_data = ma.masked_array(data)
 
     for i in range(masked_data.shape[1]):
-        masked_data[:,i] = ma.masked_where(
-            (data[:,1] < data[:,1].mean() - 3*std(data[:,1])) |
-            (data[:,1] > data[:,1].mean() + 3*std(data[:,1])), data[:,i])
+        masked_data[:, i] = ma.masked_where(
+            (data[:, 1] < data[:, 1].mean() - 3*std(data[:, 1])) |
+            (data[:, 1] > data[:, 1].mean() + 3*std(data[:, 1])), data[:, i])
 
     return masked_data
+
 
 def cutoff(data, lower_cut, upper_cut):
     """
@@ -99,10 +107,11 @@ def cutoff(data, lower_cut, upper_cut):
     masked_data.mask = False
 
     for i in range(masked_data.shape[1]):
-        masked_data[:,i] = ma.masked_where(
-            (data[:,1] < lower_cut) | (data[:,1] > upper_cut), data[:,i])
+        masked_data[:, i] = ma.masked_where(
+            (data[:, 1] < lower_cut) | (data[:, 1] > upper_cut), data[:, i])
 
     return masked_data
+
 
 def x_domain(time):
     """
@@ -123,6 +132,7 @@ def x_domain(time):
 
     return arange(t.min(), t.max(), (t.max() - t.min())/len(t))
 
+
 def split_filename(filename):
     """
     Split a filename into a name and en extenstion.
@@ -139,21 +149,23 @@ def split_filename(filename):
     """
     return splitext(basename(filename))
 
+
 def _draw_plot(ax, data, lower_line, upper_line, markersize=2):
     ax.set_xlabel("Time")
     ax.set_ylabel("Brightness [mag]")
     ax.invert_yaxis()
 
     if not (lower_line == 0 and upper_line == 0):
-        ax.plot(x_domain(data[:,0]), [lower_line]*len(x_domain(data[:,0])),
+        ax.plot(x_domain(data[:, 0]), [lower_line]*len(x_domain(data[:, 0])),
                 color="gray", linewidth=0.8, linestyle="dashed")
-        ax.plot(x_domain(data[:,0]), [upper_line]*len(x_domain(data[:,0])),
+        ax.plot(x_domain(data[:, 0]), [upper_line]*len(x_domain(data[:, 0])),
                 color="gray", linewidth=0.8, linestyle="dashed")
 
-    ax.plot(data[:,0], data[:,1], '.', markersize=markersize)
+    ax.plot(data[:, 0], data[:, 1], '.', markersize=markersize)
     data.mask = ~data.mask
-    ax.plot(data[:,0], data[:,1], 'r.', markersize=markersize)
+    ax.plot(data[:, 0], data[:, 1], 'r.', markersize=markersize)
     data.mask = ~data.mask
+
 
 def display_plot(ax, data, lower_line, upper_line):
     """
@@ -177,6 +189,7 @@ def display_plot(ax, data, lower_line, upper_line):
     figure.canvas.mpl_connect('button_press_event', _onclick)
     plt.show()
 
+
 def _onclick(event):
     global limit, lim
     limit.append(event.ydata)
@@ -188,6 +201,7 @@ def _onclick(event):
             lim = sorted(deepcopy(limit))
             limit = []
             display_plot(ax, cutoff(data, lim[0], lim[1]), lim[0], lim[1])
+
 
 def save_plot(data, filename, lower_line=0, upper_line=0):
     """
@@ -207,8 +221,10 @@ def save_plot(data, filename, lower_line=0, upper_line=0):
     figure = plt.figure(figsize=(10, 5), dpi=150)
     ax = figure.add_subplot(111)
     _draw_plot(ax, data, lower_line, upper_line)
-    png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
+    png_filename = join(dirname(filename), split_filename(filename)[0]
+                        + ".png")
     figure.savefig(png_filename)
+
 
 def filter_lightcurve(data):
     """

@@ -1,3 +1,8 @@
+"""
+Check whether a single frequency is made of linear combination of another
+frequencies.
+
+"""
 import numpy as np
 from itertools import product
 
@@ -24,10 +29,11 @@ def coefficients_generator(size, minimum=-10, maximum=10):
     for row in product(*range_list):
         yield np.array(row)
 
+
 def linear_combination(frequencies, frequency, minimum=-10, maximum=10,
                        epsilon=1e-3):
     """
-    Check whether frequency is made of linear combination of frequencies:
+    Check whether a frequency is made of linear combination of frequencies:
     f0 = (C1*f1 + C2*f2 + ...). If is, choose the ones which minimize a sum
     of square values.
 

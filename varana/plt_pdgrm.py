@@ -1,3 +1,7 @@
+"""
+Display or save to a file a periodogram.
+
+"""
 import matplotlib.pyplot as plt
 from numpy import genfromtxt
 from re import search
@@ -22,10 +26,12 @@ def get_data(filename):
 
     return x, y
 
+
 def _draw_periodogram(frequency, amplitude):
     plt.xlabel("Frequency [c/d]")
     plt.ylabel("Amplitude [mag]")
     plt.plot(frequency, amplitude, '-')
+
 
 def display_periodogram(frequency, amplitude):
     """
@@ -40,6 +46,7 @@ def display_periodogram(frequency, amplitude):
     """
     _draw_periodogram(frequency, amplitude)
     plt.show()
+
 
 def save_periodogram(frequency, amplitude, filename):
     """

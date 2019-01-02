@@ -1,3 +1,7 @@
+"""
+Fit a sum of sines to the lightcurve.
+
+"""
 import numpy as np
 from scipy.optimize import curve_fit
 from math import sqrt, pow, atan2
@@ -39,6 +43,7 @@ def approximate_sines_sum(frequencies):
 
     return sines_sum
 
+
 def amplitude(coefficients):
     """
     Calculate an amplitude from coefficients. See approximate_sines_sum
@@ -54,9 +59,9 @@ def amplitude(coefficients):
     float
         A value of the amplitude.
     """
-    pow2 = lambda x: pow(x, 2)
 
-    return sqrt(sum(map(pow2, coefficients)))
+    return sqrt(sum(map(lambda x: pow(x, 2), coefficients)))
+
 
 def phase(coefficients):
     """
@@ -75,9 +80,10 @@ def phase(coefficients):
     ph = atan2(*coefficients[::-1])
 
     if ph < 0.0:
-       ph += 2*np.pi
+        ph += 2*np.pi
 
     return ph
+
 
 def convert_linear_parameters(parameters):
     """
@@ -94,13 +100,14 @@ def convert_linear_parameters(parameters):
     parameters : ndarray
         An array with replaced coefficients by amplitudes and phases.
     """
-    for param in parameters.reshape(-1,3):
+    for param in parameters.reshape(-1, 3):
         amp = amplitude(param[:2])
         ph = phase(param[:2])
         param[0] = amp
         param[1] = ph
 
     return parameters
+
 
 def add_frequencies(parameters, frequencies):
     """
@@ -119,13 +126,14 @@ def add_frequencies(parameters, frequencies):
     updated_parameters : ndarray
         A new (-1,4)-shape array supplemented by the frequencies.
     """
-    updated_parameters = np.empty(0).reshape(0,4)
+    updated_parameters = np.empty(0).reshape(0, 4)
 
-    for parameter, frequency in zip(parameters.reshape(-1,3), frequencies):
+    for parameter, frequency in zip(parameters.reshape(-1, 3), frequencies):
         parameter = np.insert(parameter, 1, frequency)
         updated_parameters = np.append(updated_parameters, parameter)
 
-    return updated_parameters.reshape(-1,4)
+    return updated_parameters.reshape(-1, 4)
+
 
 def fit_approximate_curve(lightcurve, frequencies):
     """
@@ -146,11 +154,12 @@ def fit_approximate_curve(lightcurve, frequencies):
         An array with parameters which describe approximate_sines_sum function.
     """
     func = approximate_sines_sum(frequencies)
-    time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
+    time, mag, err = lightcurve[:, 0], lightcurve[:, 1], lightcurve[:, 2]
     x0 = np.zeros(3*len(frequencies))
     parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
 
     return parameters
+
 
 def approximate_parameters(lightcurve, frequencies):
     """
@@ -174,6 +183,7 @@ def approximate_parameters(lightcurve, frequencies):
     parameters = add_frequencies(parameters, frequencies)
 
     return parameters
+
 
 def final_sines_sum(linear_combination):
     """
@@ -205,6 +215,7 @@ def final_sines_sum(linear_combination):
 
     return sines_sum
 
+
 def split_frequencies(frequencies, epsilon):
     """
     Split frequencies into two lists.
@@ -234,6 +245,7 @@ def split_frequencies(frequencies, epsilon):
     comb_freqs = [freq for freq in frequencies if freq not in basic_freqs]
 
     return basic_freqs, comb_freqs
+
 
 def frequencies_combination(frequencies, epsilon):
     """
@@ -265,6 +277,7 @@ def frequencies_combination(frequencies, epsilon):
 
     return basic_freqs, freqs_array
 
+
 def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
     """
     Prepare initial parameters for the sum of sines function.
@@ -283,13 +296,14 @@ def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
         Initial parameters for further fitting.
     """
     parameters = np.array(basic_frequencies)
-    amplitudes_phases = np.append(approximate_parameters[:,:1],
-                                  approximate_parameters[:,2:3],
+    amplitudes_phases = np.append(approximate_parameters[:, :1],
+                                  approximate_parameters[:, 2:3],
                                   axis=1).flatten()
     parameters = np.append(parameters, amplitudes_phases)
-    parameters = np.append(parameters, approximate_parameters[:,-1].sum())
+    parameters = np.append(parameters, approximate_parameters[:, -1].sum())
 
     return parameters
+
 
 def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     """
@@ -317,12 +331,13 @@ def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     approx_param = approximate_parameters(lightcurve,
                                           np.dot(basic_freqs, freqs_comb.T))
     func = final_sines_sum(freqs_comb)
-    time, mag, err = lightcurve[:,0], lightcurve[:,1], lightcurve[:,2]
+    time, mag, err = lightcurve[:, 0], lightcurve[:, 1], lightcurve[:, 2]
     x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
     parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
     parameters = final_parameters(parameters, freqs_comb)
 
     return parameters
+
 
 def final_parameters(parameters, frequencies_combination):
     """
@@ -336,7 +351,8 @@ def final_parameters(parameters, frequencies_combination):
        the rest of the parameters.
     frequencies_combination : ndarray
        An (n,m)-shape array with integers. n denotes a number of all
-       frequencies (base and their combinations), m indicates basic frequencies.
+       frequencies (base and their combinations), m indicates basic
+       frequencies.
 
     Returns
     -------
@@ -358,6 +374,7 @@ def final_parameters(parameters, frequencies_combination):
 
     return param
 
+
 def normalize_phase(phase):
     """
     Shift a phase angle to the (0, 2*pi) interval.
@@ -368,6 +385,7 @@ def normalize_phase(phase):
         A value of phase in radians.
     """
     return phase - 2*np.pi*(phase//(2*np.pi))
+
 
 def print_parameters(parameters):
     """
@@ -388,8 +406,9 @@ def print_parameters(parameters):
     print(fmt.format(parameters[0]))
     fmt += " {1:16.10f} {2:16.10f}"
 
-    for i, par in enumerate(parameters[1:].reshape(-1,3)):
+    for i, par in enumerate(parameters[1:].reshape(-1, 3)):
         print(fmt.format(*par))
+
 
 def sines_sum(parameters):
     """
@@ -419,6 +438,7 @@ def sines_sum(parameters):
 
     return func
 
+
 def substract_model(data, model):
     """
     Substract a model from the second column of the data.
@@ -435,9 +455,10 @@ def substract_model(data, model):
     data : ndarray
         Updated data: column2 = column2 - model(column1)
     """
-    data[:,1] -= model(data[:,0])
+    data[:, 1] -= model(data[:, 0])
 
     return data
+
 
 def save_residuals(lightcurve, parameters, filename):
     """
