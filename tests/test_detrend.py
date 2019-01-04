@@ -115,3 +115,11 @@ class DetrendTest(unittest.TestCase):
 
         self.assertTrue(np.allclose(results,
                                     detrend_data(self.data[:10], func, 17.58)))
+
+    def tearDown(self):
+        path = None
+        self.lc_filename = None
+        self.lc_trim_filename = None
+        self.data = None
+        self.trim_data = None
+        self.x_domain = None
