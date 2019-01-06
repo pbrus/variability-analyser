@@ -11,8 +11,9 @@ class DetrendTest(unittest.TestCase):
 
     def setUp(self):
         path = split(realpath(__file__))[0]
-        self.lc_filename = path + r'/test_data/test_detrend.dat'
-        self.lc_trim_filename = path + r'/test_data/test_detrend_1.dat'
+        self.lc_filename = path + r'/test_data/synthetic_lc.dat'
+        self.lc_trim_filename = (
+            path + r'/test_data/synthetic_lc_sigma_clipping.dat')
         self.data = np.genfromtxt(self.lc_filename)
         self.trim_data = np.genfromtxt(self.lc_trim_filename)
         self.x_domain = np.array([
