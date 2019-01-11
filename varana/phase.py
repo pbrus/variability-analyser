@@ -245,7 +245,7 @@ def display_plot(phase, magnitude, model=None):
     plt.show()
 
 
-def save_plot(phase, magnitdue, filename, model=None):
+def save_plot(phase, magnitude, filename, model=None):
     """
     Save an image with a phased lightcurve to the file.
 
@@ -286,4 +286,4 @@ def save_phased_lightcurve(phase, magnitude, filename):
         The name of a file which will store a phased lightcurve.
     """
     result = np.append(phase.reshape(1, -1), magnitude.reshape(1, -1), axis=0)
-    np.savetxt(args.save, result.T, fmt="%16.6f %9.4f")
+    np.savetxt(filename, result.T, fmt="%16.6f %9.4f")
