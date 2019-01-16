@@ -209,3 +209,9 @@ class FitTest(unittest.TestCase):
             return x**2 - 3*x - 4
 
         self.assertTrue(np.allclose(substract_model(X, func), Y))
+
+    def tearDown(self):
+        path = None
+        self.lc_filename = None
+        self.lightcurve = None
+        self.frequencies = None

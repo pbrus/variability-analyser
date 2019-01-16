@@ -325,7 +325,7 @@ def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     Returns
     -------
     parameters : ndarray
-        An array with parameters which describe fitted function.
+        An array with parameters which describe a fitted function.
     """
     basic_freqs, freqs_comb = frequencies_combination(frequencies, epsilon)
     approx_param = approximate_parameters(lightcurve,
