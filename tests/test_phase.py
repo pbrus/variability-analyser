@@ -43,3 +43,15 @@ class PhaseTest(unittest.TestCase):
             0.79400261, 0.04693611, 0.29986962, 0.55280313
         ])
         self.assertTrue(np.allclose(time_to_phase(time, period), results))
+
+    def test_multiply_phase(self):
+        n = 4
+        time = np.arange(2430, 2706, 13)
+        period = 2.31
+        phase = time_to_phase(time, period)
+        magnitude = np.arange(10, 32)
+        pha, mag = multiply_phase(phase, magnitude, n)
+        phase = np.append(np.append(np.append(phase, phase+1), phase+2),
+                          phase+3)
+        self.assertTrue(np.allclose(pha, phase))
+        self.assertTrue(np.allclose(mag, np.tile(magnitude, n)))
