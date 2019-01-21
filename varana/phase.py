@@ -157,7 +157,7 @@ def get_model(filename, frequency, phase, magnitude):
         A tuple made of X, Y coordinates.
     """
     y_intercept, parameters = read_model(filename)
-    min_phase, max_phase = round(phase.min()), round(phase.max())
+    min_phase, max_phase = int(round(phase.min())), int(round(phase.max()))
     approx_sines_sum = sines_sum(parameters, y_intercept, frequency)
     x0, _ = curve_fit(approx_sines_sum, phase, magnitude, p0=0)
     X = np.linspace(min_phase, max_phase, max_phase*100)
