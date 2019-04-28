@@ -5,7 +5,7 @@ from varana.detrend import *
 
 argparser = ArgumentParser(
     prog='detrend.py',
-    description='>> Removes seasonal trends from a lightcurve <<',
+    description='>> Removes seasonal trends from a light curve <<',
     epilog='Copyright (c) 2019 Przemysław Bruś',
     formatter_class=RawTextHelpFormatter
 )
@@ -13,7 +13,7 @@ argparser = ArgumentParser(
 argparser.add_argument(
     'input_lightcurve',
     help=dedent('''\
-    The name of a file which stores lightcurve data.
+    The name of a file which stores light curve data.
     ------------------------------------
     The file must contain three columns:
     time magnitude magnitude_error
@@ -24,7 +24,7 @@ argparser.add_argument(
 argparser.add_argument(
     'output_lightcurve',
     help=dedent('''\
-    The name of a file which will store a detrended lightcurve.
+    The name of a file which will store a detrended light curve.
 
     ''')
 )

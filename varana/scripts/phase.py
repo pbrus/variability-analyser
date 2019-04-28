@@ -5,7 +5,7 @@ from varana.phase import *
 
 argparser = ArgumentParser(
     prog='phase.py',
-    description='>> Phase a lightcurve <<',
+    description='>> Phase a light curve <<',
     epilog='Copyright (c) 2019 Przemysław Bruś',
     formatter_class=RawTextHelpFormatter
 )
@@ -13,7 +13,7 @@ argparser = ArgumentParser(
 argparser.add_argument(
     'lightcurve',
     help=dedent('''\
-    The name of a file which stores lightcurve data.
+    The name of a file which stores light curve data.
     ------------------------------------
     The file must contain three columns:
     time magnitude magnitude_error
@@ -24,7 +24,7 @@ argparser.add_argument(
 argparser.add_argument(
     'frequency',
     help=dedent('''\
-    A value of frequency which phases the lightcurve with.
+    A value of frequency which phases the light curve with.
 
     '''),
     type=float
@@ -73,7 +73,7 @@ argparser.add_argument(
 argparser.add_argument(
     '--save',
     help=dedent('''\
-    Save the phased lightcurve to the file.
+    Save the phased light curve to the file.
 
     '''),
     metavar="filename",

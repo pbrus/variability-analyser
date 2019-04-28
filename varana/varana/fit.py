@@ -1,5 +1,5 @@
 """
-Fit a sum of sines to the lightcurve.
+Fit a sum of sines to the light curve.
 
 """
 import numpy as np
@@ -137,7 +137,7 @@ def add_frequencies(parameters, frequencies):
 
 def fit_approximate_curve(lightcurve, frequencies):
     """
-    Fit an approximate curve to the lightcurve using linear least squares
+    Fit an approximate curve to the light curve using a linear least squares
     method. The curve is composed of a sum of sines. Each sine has defined
     frequency.
 
@@ -307,7 +307,7 @@ def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
 
 def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     """
-    Fit a final curve to the lightcurve using non-linear least squares
+    Fit a final curve to the light curve using a non-linear least squares
     method. The curve is composed of a sum of sines. The frequency parameters
     are limited only to basic frequencies. Some sines can be harmonics or have
     frequencies equal to linear combinations of the basic frequencies.
@@ -462,7 +462,7 @@ def substract_model(data, model):
 
 def save_residuals(lightcurve, parameters, filename):
     """
-    Save residuals of a lightcurve to the file.
+    Save residuals of a light curve to the file.
 
     Parameters
     ----------

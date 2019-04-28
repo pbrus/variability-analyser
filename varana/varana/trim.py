@@ -1,5 +1,5 @@
 """
-Trim a lightcurve using the sigma clipping or a manual rejection.
+Trim a light curve using the sigma clipping or a manual rejection.
 
 """
 import matplotlib.pyplot as plt
@@ -253,7 +253,7 @@ def filter_lightcurve(data):
 if __name__ == "__main__":
     argparser = ArgumentParser(
         prog='trim.py',
-        description='>> Removes outstanding points from a lightcurve <<',
+        description='>> Removes outstanding points from a light curve <<',
         epilog='Copyright (c) 2019 Przemysław Bruś',
         formatter_class=RawTextHelpFormatter
     )
@@ -261,7 +261,7 @@ if __name__ == "__main__":
     argparser.add_argument(
         'input_lightcurve',
         help=dedent('''\
-        The name of a file which stores lightcurve data.
+        The name of a file which stores light curve data.
         ------------------------------------
         The file must contain three columns:
         time magnitude magnitude_error
@@ -272,7 +272,7 @@ if __name__ == "__main__":
     argparser.add_argument(
         'output_lightcurve',
         help=dedent('''\
-        The name of a file which will store a filtered lightcurve.
+        The name of a file which will store a filtered light curve.
 
         ''')
     )

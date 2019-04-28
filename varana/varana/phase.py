@@ -1,5 +1,5 @@
 """
-Phase a lightcurve.
+Phase a light curve with a specific frequency.
 
 """
 import numpy as np
@@ -15,7 +15,7 @@ filterwarnings("ignore",
 
 def read_lightcurve(filename):
     """
-    Read a lightcurve from a file.
+    Read a light curve from a file.
 
     Parameters
     ----------
@@ -69,7 +69,7 @@ def time_to_phase(time, period):
     time : ndarray
         An array which represents a time vector.
     period : float
-        A value of period which phases the lightcurve with.
+        A value of period which phases the light curve with.
 
     Returns
     -------
@@ -113,14 +113,14 @@ def multiply_phase(phase, magnitude, factor):
 
 def prepare_data(filename, frequency, phases_number):
     """
-    Phase a lightcurve with the frequency.
+    Phase a light curve with the frequency.
 
     Parameters
     ----------
     filename : str
-        A name of a file which stores a lightcurve.
+        A name of a file which stores a light curve.
     frequency : float
-        A value of the frequeny which phases the lightcurve with.
+        A value of the frequeny which phases the light curve with.
     phases_number : int
         A number indicating how many phases to display.
 
@@ -138,14 +138,14 @@ def prepare_data(filename, frequency, phases_number):
 
 def get_model(filename, frequency, phase, magnitude):
     """
-    Get a model in XY coordinates and align it to the phased lightcurve.
+    Get a model in XY coordinates and align it to the phased light curve.
 
     Parameters
     ----------
     filename : str
         A name of a file which stores a model.
     frequency : float
-        A value of the frequeny which phases the lightcurve with.
+        A value of the frequeny which phases the light curve with.
     phase : ndarray
         An array which stores a phase vector.
     magnitude : ndarray
@@ -177,7 +177,7 @@ def sines_sum(sines_parameters, y_intercept, frequency):
     y_intercept : float
         The place where the function is hooked on the y-axis.
     frequency : float
-        A value of the frequeny which phases the lightcurve with.
+        A value of the frequeny which phases the light curve with.
 
     Returns
     -------
@@ -226,7 +226,7 @@ def _draw_model(X, Y):
 
 def display_plot(phase, magnitude, model=None):
     """
-    Display a phased lightcurve.
+    Display a phased light curve.
 
     Parameters
     ----------
@@ -247,7 +247,7 @@ def display_plot(phase, magnitude, model=None):
 
 def save_plot(phase, magnitude, filename, model=None):
     """
-    Save an image with a phased lightcurve to the file.
+    Save an image with a phased light curve to the file.
 
     Parameters
     ----------
@@ -256,7 +256,7 @@ def save_plot(phase, magnitude, filename, model=None):
     magnitude : ndarray
         An array which represents a magnitude vector.
     filename : str
-        The name of a file which will store the image of a phased lightcurve.
+        The name of a file which will store the image of a phased light curve.
     model : tuple
         X, Y coordinates of the model.
     """
@@ -274,7 +274,7 @@ def save_plot(phase, magnitude, filename, model=None):
 
 def save_phased_lightcurve(phase, magnitude, filename):
     """
-    Save a phased lightcurve to the file.
+    Save a phased light curve to the file.
 
     Parameters
     ----------
@@ -283,7 +283,7 @@ def save_phased_lightcurve(phase, magnitude, filename):
     magnitude : ndarray
         An array which represents a magnitude vector.
     filename : str
-        The name of a file which will store a phased lightcurve.
+        The name of a file which will store a phased light curve.
     """
     result = np.append(phase.reshape(1, -1), magnitude.reshape(1, -1), axis=0)
     np.savetxt(filename, result.T, fmt="%16.6f %9.4f")

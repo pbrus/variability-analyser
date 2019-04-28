@@ -1,5 +1,5 @@
 """
-Detrend a lightcurve removing seasonal deviations.
+Detrend a light curve removing seasonal deviations.
 
 """
 import matplotlib.pyplot as plt

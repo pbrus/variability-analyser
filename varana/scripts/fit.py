@@ -5,7 +5,7 @@ from varana.fit import *
 
 argparser = ArgumentParser(
     prog='fit.py',
-    description='>> Fit a sum of sines to the lightcurve <<',
+    description='>> Fit a sum of sines to the light curve <<',
     epilog='Copyright (c) 2019 Przemysław Bruś',
     formatter_class=RawTextHelpFormatter
 )
@@ -13,7 +13,7 @@ argparser = ArgumentParser(
 argparser.add_argument(
     'lightcurve',
     help=dedent('''\
-    The name of a file which stores lightcurve data.
+    The name of a file which stores light curve data.
     ------------------------------------
     The file must contain three columns:
     time magnitude magnitude_error
@@ -66,5 +66,5 @@ frequencies = sorted(args.freq)
 parameters = fit_final_curve(lightcurve, frequencies, args.eps)
 print_parameters(parameters)
 
-if args.resid != None:
+if args.resid is not None:
     save_residuals(lightcurve, parameters, args.resid)
