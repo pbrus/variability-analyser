@@ -11,7 +11,7 @@ function print_welcome()
     echo -e ""
     echo -e " Usage: var_analyser.sh <lightcurve>"
     echo -e ""
-    echo -e " Version: 0.0.0"
+    echo -e " Version: 0.1.0"
     echo -e " Przemysław Bruś"
     echo -e ""
 }
