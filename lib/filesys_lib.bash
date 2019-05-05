@@ -20,3 +20,17 @@ function remove_files_or_dirs()
         rm -rf $item
     done
 }
+
+function check_whether_files_exist()
+{
+    local item
+
+    for item in "$@"
+    do
+        if [ ! -e ${item} ]
+        then
+            print_file_not_exists ${item}
+            exit 1
+        fi
+    done
+}

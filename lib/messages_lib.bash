@@ -87,3 +87,8 @@ function print_write_comment()
     echo -e " ${RED}Write a comment about ${lightcurve_filename} object:\
               ${RESET}"
 }
+
+function print_file_not_exists()
+{
+    echo -e " ${RED}File $1 doesn't exist!${RESET}"
+}
