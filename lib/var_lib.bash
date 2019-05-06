@@ -1,7 +1,7 @@
 function welcome_message()
 {
     print_welcome
-    exit 1
+    exit 0
 }
 
 function display_tasks()
@@ -62,7 +62,7 @@ function display_specific_task()
         clean_working_dir
         ;;
     q)
-        exit
+        exit 0
         ;;
     esac
 }

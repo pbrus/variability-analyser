@@ -7,12 +7,16 @@ RESET='\033[0m'
 function print_welcome()
 {
     echo -e ""
-    echo -e " ${BROWN}Variability analyzer _||__|__${RESET}"
+    echo -e " ${BROWN}Variability analyser _||__|__${RESET}"
     echo -e ""
-    echo -e " Usage: var_analyser.sh <lightcurve>"
+    echo -e " Usage: var_analyser.sh <path/to/lightcurve>"
+    echo -e ""
+    echo -e " Options:"
+    echo -e "   --config /path/to/config_file"
+    echo -e ""
     echo -e ""
     echo -e " Version: 0.1.0"
-    echo -e " Przemysław Bruś"
+    echo -e " https://github.com/pbrus"
     echo -e ""
 }
 

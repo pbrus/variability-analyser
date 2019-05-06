@@ -1,19 +1,35 @@
 #!/usr/bin/env bash
 
-source lib/messages_lib.bash
-source lib/var_lib.bash
-source lib/filesys_lib.bash
-source lib/prepare_lc_lib.bash
-source var.config
+source ${VARANA_PATH}/lib/messages_lib.bash
+source ${VARANA_PATH}/lib/var_lib.bash
+source ${VARANA_PATH}/lib/filesys_lib.bash
+source ${VARANA_PATH}/lib/prepare_lc_lib.bash
 
 
-if [ $# -ne 1 ]
+configure_file=${VARANA_PATH}/var.config
+
+if [ $# -eq 1 ] || [ $# -eq 3 ]
 then
-    welcome_message
+    while [ $# -gt 0 ]
+    do
+        case $1 in
+            --config)
+                configure_file="$2"
+                shift 2
+                ;;
+            *)
+                lightcurve_file=$1
+                lightcurve_filename=`basename $1`
+                shift
+                ;;
+        esac
+    done
 else
-    lightcurve_file=$1
-    lightcurve_filename=`basename $1`
+    welcome_message
 fi
+
+check_whether_files_exist ${lightcurve_file} ${configure_file}
+source ${configure_file}
 
 create_not_existing_dir ${LC_DETREND_DIR} ${LC_TRIM_DIR} ${RESULTS_DIR}
 detrend ${lightcurve_file}
