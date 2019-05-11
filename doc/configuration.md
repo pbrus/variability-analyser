@@ -48,15 +48,15 @@ In this section you can set parameters of Fourier Transform (FT).
 ## Location
 
 There are two possible ways to work with the `config` file. The default file is named as `var.config` and is located in your `installation directory`. You can edit it to have a global configuration file. If you call the main script without `--config` option:
-```bash
+```
 $ var_analyser.sh <path/to/lightcurve>
 ```
 the script will parse the global configuration file. The alternative way is to use `--config` option which points the path to another `config` file:
-```bash
+```
 $ var_analyser.sh <path/to/lightcurve> --config <path/to/config_file>
 ```
 > :bulb: **_HINT:_**  If your local `config` file has the same name as the global one, i.e. `var.config` and is located in the current directory, i.e. `./`, please use the following call:
-> ```bash
+> ```
 > $ var_analyser.sh <path/to/lightcurve> --config ./var.config
 > ```
 > to overwrite global configuration. `--config var.config` doesn't overwrite a content of the global `config`.
