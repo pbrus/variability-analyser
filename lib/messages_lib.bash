@@ -23,10 +23,10 @@ function print_welcome()
 function print_tasks()
 {
     echo -e ""
-    echo -e "What do you want to do with the lightcurve?"
+    echo -e "What do you want to do with the light curve?"
     echo -e " ${RED}c${RESET} - calculate the Fourier Transform"
     echo -e " ${RED}e${RESET} - edit the frequencies table and fit a model"
-    echo -e " ${RED}p${RESET} - phase the lightcurve"
+    echo -e " ${RED}p${RESET} - phase the light curve"
     echo -e " ${RED}d${RESET} - detrend the residuals"
     echo -e " ${RED}t${RESET} - trim the residuals"
     echo -e " ${RED}f${RESET} - change fourier parameters"
@@ -83,7 +83,7 @@ function print_question_about_variability()
 
 function print_phase_lightcurve()
 {
-    echo -e " ${GREEN}Phase the lightcurve${RESET}"
+    echo -e " ${GREEN}Phase the light curve${RESET}"
 }
 
 function print_write_comment()
