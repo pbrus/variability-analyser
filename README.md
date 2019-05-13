@@ -31,7 +31,7 @@ To uninstall the software entirely remove the `installation directory`.
 
 ## Usage
 
-To get more info please check the [doc](https://github.com/pbrus/variability-analyser/tree/master/doc) directory.
+To get more info please check the [doc](doc) directory.
 
 ## License
 

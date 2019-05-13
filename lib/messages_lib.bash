@@ -32,7 +32,7 @@ function print_tasks()
     echo -e " ${RED}f${RESET} - change fourier parameters"
     echo -e " ${RED}r${RESET} - restart the analysis"
     echo -e " ${RED}s${RESET} - save the results"
-    echo -e " ${RED}q${RESET} - quit a program"
+    echo -e " ${RED}q${RESET} - quit the program"
     echo -e ""
 }
 
