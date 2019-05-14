@@ -72,11 +72,11 @@ Moreover, we can inspect the whole periodogram on the image:
 
 <img src="resources/rr_lyr_periodogram-1.png" width="800" alt="rr_lyr_periodogram-1.png">
 
-Now we should choose `e` option to save a frequency with the highest amplitude to the frequencies table. In our case it will be `1.214720`.
+Now we should choose `e` option to save a frequency with the highest amplitude to the frequencies table. In our case it is `1.214720`.
 
 > :point_right: **_NOTE:_** The frequencies table is a text file. This file will be opened using an editor pointed by `EDITOR` variable. See [configuration.md](configuration.md).
 
-The software will fit a single sine to the time series using a non-linear least squares method. The model is printed on the screen:
+The software fits a single sine to the time series using a non-linear least squares method. The model is printed on the screen:
 ```
 amplitude       frequency        phase_angle
 0.1585247297    1.2147303440     2.5101232542
@@ -102,6 +102,25 @@ amplitude       frequency        phase_angle
 y_intercept
 17.3740450844
 ```
+> :bulb: **_HINT:_** How do we know when to stop the analysis? We should check a value of S/N ratio. If a subsequent frequency has S/N ratio less than 4.5 it means that there is no significant signal in residuals.
+
+> :bulb: **_HINT:_** Despite we have the final model composing of four sines there is still a significant frequency in the periodogram:
+> ```
+>    0     0.000858  1165.501166    0.00355     6.23
+>    1     0.003562   280.741157    0.00297     5.23
+>    2     0.000390  2564.102564    0.00254     4.46
+>    ...
+> ```
+> <img src="resources/rr_lyr_periodogram-2.png" width="800" alt="rr_lyr_periodogram-2.png">
+>
+> This long-period variability can be ousted using `d` option. Indeed, removing of trend eliminates this small frequency:
+> ```
+>    0     3.384602     0.295456    0.00215     3.80
+>    1     2.771522     0.360813    0.00207     3.67
+>    2     7.744490     0.129124    0.00197     3.49
+>    ...
+> ```
+
 To check the model we can display it on a phased light curve. To do this we choose `p` option and then select the most significant frequency with the highest amplitude: `1.2147298878`:
 
 <img src="resources/rr_lyr_phase.png" width="800" alt="rr_lyr_phase.png">
@@ -111,4 +130,4 @@ To check the model we can display it on a phased light curve. To do this we choo
 At the end we save results selecting `s` option. If a star is variable we answer `y`, phase the light curve and add some comment about the star, for example:
 > RR Lyrae star
 
-All results will be stored in a directory pointed by `RESULTS_DIR` including a log file with comments for many time series.
+All results including a log file with comments for many time series will be stored in a directory pointed by `RESULTS_DIR`.
