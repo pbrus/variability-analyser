@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Trim a light curve using the sigma clipping or a manual rejection.
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from argparse import ArgumentParser, RawTextHelpFormatter
 from textwrap import dedent
 from varana.freq_comb import *

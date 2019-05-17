@@ -15,7 +15,7 @@ This package provides tools to:
 """
 
 __all__ = ["detrend", "trim", "freq_comb", "fit", "phase", "plt_pdgrm"]
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 from . import detrend
