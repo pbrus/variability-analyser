@@ -1,4 +1,5 @@
 # Varana
+[![Build Status](https://travis-ci.org/pbrus/variability-analyser.svg?branch=master)](https://travis-ci.org/pbrus/variability-analyser)
 [![Code](https://img.shields.io/badge/code-Python-blue.svg "Python")](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg "MIT license")](https://github.com/pbrus/variability-analyser/varana/blob/master/LICENSE)
 

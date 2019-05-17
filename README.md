@@ -1,7 +1,8 @@
 # Variability-analyser
-[![GitHub release](https://img.shields.io/badge/ver.-0.1.0-brightgreen.svg "download")](https://github.com/pbrus/variability-analyser)
+[![Build Status](https://travis-ci.org/pbrus/variability-analyser.svg?branch=master)](https://travis-ci.org/pbrus/variability-analyser)
 [![Code](https://img.shields.io/badge/code-Python-blue.svg "Python")](https://www.python.org/)
 [![Code](https://img.shields.io/badge/code-Bash-green.svg "Bash")](https://www.gnu.org/software/bash/)
+[![GitHub release](https://img.shields.io/badge/ver.-0.1.0-brightgreen.svg "download")](https://github.com/pbrus/variability-analyser)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg "MIT license")](https://github.com/pbrus/variability-analyser/blob/master/LICENSE)
 
 This package allows to analyze the variability of stars and determine shapes of their light curves.
