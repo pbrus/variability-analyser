@@ -1,6 +1,7 @@
 # Varana
 [![Build Status](https://travis-ci.org/pbrus/variability-analyser.svg?branch=master)](https://travis-ci.org/pbrus/variability-analyser)
 [![Code](https://img.shields.io/badge/code-Python-blue.svg "Python")](https://www.python.org/)
+[![PyPI version](https://badge.fury.io/py/varana.svg)](https://badge.fury.io/py/varana)
 [![License](https://img.shields.io/badge/license-MIT-yellow.svg "MIT license")](https://github.com/pbrus/variability-analyser/varana/blob/master/LICENSE)
 
 This module determines the variability of stars through analyzing their time series.

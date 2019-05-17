@@ -10,7 +10,7 @@ setuptools.setup(
     description="Analyse the variability of stars",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pbrus/variability-analyser/varana",
+    url="https://github.com/pbrus/variability-analyser/tree/master/varana",
     packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=["numpy", "scipy", "matplotlib", "scikit-learn"],
     scripts=[
