@@ -169,7 +169,7 @@ def sorted_centers(kmeans):
 def spline_order(seasons_amount):
     """
     Calculate an order of the spline function. The order must be: 1 <= k <= 5
-    and depents on the input parameter.
+    and depends on the input parameter.
 
     Parameters
     ----------
