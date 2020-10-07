@@ -115,3 +115,4 @@ dmypy.json
 .pyre/
 
 lightcurves_*
+.idea/
