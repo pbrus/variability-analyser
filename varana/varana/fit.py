@@ -491,7 +491,8 @@ def save_residuals(lightcurve: ndarray, parameters: ndarray, filename: str) -> N
 
     filename : str
         A name of the file where the data will be saved to.
+
     """
     model = sines_sum(parameters)
     lightcurve = substract_model(lightcurve, model)
-    np.savetxt(filename, lightcurve, fmt="%16.6f %9.4f %7.4f")
+    np.savetxt(filename, lightcurve, fmt="%18.7f %15.7f %15.7f")
