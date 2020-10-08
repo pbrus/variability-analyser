@@ -2,21 +2,23 @@
 Fit a sum of sines to the light curve.
 
 """
-import numpy as np
-from scipy.optimize import curve_fit
 from math import sqrt, pow, atan2
+from typing import Callable
 from warnings import filterwarnings
-from varana.freq_comb import coefficients_generator, linear_combination
 
-filterwarnings("ignore",
-               message="Covariance of the parameters could not be estimated")
+import numpy as np
+from numpy import ndarray
+from scipy.optimize import curve_fit
+
+from varana.freq_comb import linear_combination
+
+filterwarnings("ignore", message="Covariance of the parameters could not be estimated")
 
 
-def approximate_sines_sum(frequencies):
+def approximate_sines_sum(frequencies: list) -> Callable:
     """
-    For given frequencies calculate a parameterized sum of sines. Each sine
-    function is linearized, i.e.: A*sin(2*pi*x + fi) + y0 is equal:
-    A1*sin(2*pi*x) + A2*cos(2*pi*x) + y0,
+    For given frequencies calculate a parameterized sum of sines. Each sine function is linearized, i.e.:
+    A*sin(2*pi*x + fi) + y0 is equal: A1*sin(2*pi*x) + A2*cos(2*pi*x) + y0
     where A = sqrt(A1^2 + A2^2), arctg(fi)=A2/A1
 
     Parameters
@@ -28,26 +30,33 @@ def approximate_sines_sum(frequencies):
     -------
     sines_sum : function
         Parameterized sum of sines.
+
     """
-    def sines_sum(x, *sines_parameters):
+
+    def _sines_sum(x, *sines_parameters):
+        """
+        Compose a sum of sines.
+
+        """
         param = sines_parameters
         func = 0
 
         for i, frequency in enumerate(frequencies):
             i *= 3
-            func += (param[i]*np.sin(2*np.pi*frequency*x)
-                     + param[i+1]*np.cos(2*np.pi*frequency*x)
-                     + param[i+2])
+            func += (
+                param[i] * np.sin(2 * np.pi * frequency * x)
+                + param[i + 1] * np.cos(2 * np.pi * frequency * x)
+                + param[i + 2]
+            )
 
         return func
 
-    return sines_sum
+    return _sines_sum
 
 
-def amplitude(coefficients):
+def amplitude(coefficients: ndarray) -> float:
     """
-    Calculate an amplitude from coefficients. See approximate_sines_sum
-    function.
+    Calculate an amplitude from coefficients. See approximate_sines_sum function.
 
     Parameters
     ----------
@@ -58,12 +67,13 @@ def amplitude(coefficients):
     -------
     float
         A value of the amplitude.
+
     """
 
     return sqrt(sum(map(lambda x: pow(x, 2), coefficients)))
 
 
-def phase(coefficients):
+def phase(coefficients: ndarray) -> float:
     """
     Calculate a phase from coefficients. See approximate_sines_sum function.
 
@@ -76,19 +86,17 @@ def phase(coefficients):
     -------
     float
         A phase angle from (0, 2pi) interval.
+
     """
     ph = atan2(*coefficients[::-1])
 
-    if ph < 0.0:
-        ph += 2*np.pi
-
-    return ph
+    return ph if ph >= 0 else ph + 2 * np.pi
 
 
-def convert_linear_parameters(parameters):
+def convert_linear_parameters(parameters: ndarray) -> ndarray:
     """
-    Convert all A1, A2 parameters of sum of sines function to amplitudes and
-    phases. For more info see approximate_sines_sum function.
+    Convert all A1, A2 parameters of sum of sines function to amplitudes and phases.
+    For more info see approximate_sines_sum function.
 
     Parameters
     ----------
@@ -99,6 +107,7 @@ def convert_linear_parameters(parameters):
     -------
     parameters : ndarray
         An array with replaced coefficients by amplitudes and phases.
+
     """
     for param in parameters.reshape(-1, 3):
         amp = amplitude(param[:2])
@@ -109,15 +118,14 @@ def convert_linear_parameters(parameters):
     return parameters
 
 
-def add_frequencies(parameters, frequencies):
+def add_frequencies(parameters: ndarray, frequencies: list) -> ndarray:
     """
     Add frequencies to the array with parameters of sum of sines function.
 
     Parameters
     ----------
     parameters : ndarray
-       An array with all parameters of sum of sines function without
-       frequencies.
+       An array with all parameters of sum of sines function without frequencies.
     frequencies : list
         A list with all frequencies delivered by input.
 
@@ -125,6 +133,7 @@ def add_frequencies(parameters, frequencies):
     -------
     updated_parameters : ndarray
         A new (-1,4)-shape array supplemented by the frequencies.
+
     """
     updated_parameters = np.empty(0).reshape(0, 4)
 
@@ -135,11 +144,10 @@ def add_frequencies(parameters, frequencies):
     return updated_parameters.reshape(-1, 4)
 
 
-def fit_approximate_curve(lightcurve, frequencies):
+def fit_approximate_curve(lightcurve: ndarray, frequencies: list) -> ndarray:
     """
-    Fit an approximate curve to the light curve using a linear least squares
-    method. The curve is composed of a sum of sines. Each sine has defined
-    frequency.
+    Fit an approximate curve to the light curve using a linear least squares method. The curve is composed of a sum of
+    sines. Each sine has defined frequency.
 
     Parameters
     ----------
@@ -152,16 +160,17 @@ def fit_approximate_curve(lightcurve, frequencies):
     -------
     parameters : ndarray
         An array with parameters which describe approximate_sines_sum function.
+
     """
     func = approximate_sines_sum(frequencies)
     time, mag, err = lightcurve[:, 0], lightcurve[:, 1], lightcurve[:, 2]
-    x0 = np.zeros(3*len(frequencies))
+    x0 = np.zeros(3 * len(frequencies))
     parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
 
     return parameters
 
 
-def approximate_parameters(lightcurve, frequencies):
+def approximate_parameters(lightcurve: ndarray, frequencies: list) -> ndarray:
     """
     Calculate parameters of an approximate sum of sines.
 
@@ -175,8 +184,8 @@ def approximate_parameters(lightcurve, frequencies):
     Returns
     -------
     parameters : ndarray
-        An array with parameters which describe each sine, i.e.: amplitude,
-        frequency, phase, y intercept.
+        An array with parameters which describe each sine, i.e.: amplitude, frequency, phase, y intercept.
+
     """
     parameters = fit_approximate_curve(lightcurve, frequencies)
     parameters = convert_linear_parameters(parameters)
@@ -185,38 +194,43 @@ def approximate_parameters(lightcurve, frequencies):
     return parameters
 
 
-def final_sines_sum(linear_combination):
+def final_sines_sum(linear_comb: ndarray) -> Callable:
     """
-    For given linear combination of basic frequencies return parameterized
-    sum of sines.
+    For a given linear combination of basic frequencies return parameterized sum of sines.
 
     Parameters
     ----------
-    linear_combination : ndarray
-       An (n,m)-shape array with integers. n denotes a number of all
-       frequencies (base and their combinations), m indicates a number of basic
-       frequencies.
+    linear_comb : ndarray
+       An (n,m)-shape array with integers:
+       - n: a number of all frequencies (base and their combinations)
+       - m: a number of basic frequencies
 
     Returns
     -------
     sines_sum : function
         The parameterized sum of sines.
+
     """
-    def sines_sum(x, *param):
-        m, n = linear_combination.shape
+
+    def _sines_sum(x, *param):
+        """
+        Compose a sum of sines.
+
+        """
+        m, n = linear_comb.shape
         func = 0
 
         for i in range(m):
-            frequency = np.dot(param[:n], linear_combination[i])
+            frequency = np.dot(param[:n], linear_comb[i])
             i *= 2
-            func += (param[n+i]*np.sin(2*np.pi*frequency*x + param[n+i+1]))
+            func += param[n + i] * np.sin(2 * np.pi * frequency * x + param[n + i + 1])
 
         return func + param[-1]
 
-    return sines_sum
+    return _sines_sum
 
 
-def split_frequencies(frequencies, epsilon):
+def split_frequencies(frequencies: list, epsilon: float) -> tuple:
     """
     Split frequencies into two lists.
 
@@ -225,47 +239,46 @@ def split_frequencies(frequencies, epsilon):
     frequencies : list
         A list with frequencies.
     epsilon : float
-        If a single frequency is compared to the linear combination of another
-        frequencies, the epsilon means tolerance in this comparison.
+        If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
+        in this comparison.
 
     Returns
     -------
     tuple
-        A tuple made of two list. The first one contains basic frequencies, the
-        second one their combinations.
+        A tuple made of two list. The first one contains basic frequencies, the second one their combinations.
+
     """
     basic_freqs = frequencies[:1]
     n_freqs = len(frequencies)
 
     for i in range(n_freqs - 1):
-        if not np.any(linear_combination(basic_freqs, frequencies[i+1],
-                                         epsilon=epsilon)):
-            basic_freqs.append(frequencies[i+1])
+        if not np.any(linear_combination(basic_freqs, frequencies[i + 1], epsilon=epsilon)):
+            basic_freqs.append(frequencies[i + 1])
 
     comb_freqs = [freq for freq in frequencies if freq not in basic_freqs]
 
     return basic_freqs, comb_freqs
 
 
-def frequencies_combination(frequencies, epsilon):
+def frequencies_combination(frequencies: list, epsilon: float) -> tuple:
     """
-    Select from all frequencies only those which are independent and generate
-    an array with coefficients of a linear combinations of basic frequencies.
+    Select from all frequencies only those which are independent and generate an array with coefficients of linear
+    combinations of basic frequencies.
 
     Parameters
     ----------
     frequencies : list
         A list with frequencies.
     epsilon : float
-        If a single frequency is compared to the linear combination of another
-        frequencies, the epsilon means tolerance in this comparison.
+        If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
+        in this comparison.
 
     Returns
     -------
     tuple
-        A tuple made of a list and an ndarray. The first one contains basic
-        frequencies, the second one the array with coefficients of linear
-        combinations of basic frequencies.
+        A tuple made of a list and an ndarray. The first one contains basic frequencies, the second one the array with
+        coefficients of linear combinations of basic frequencies.
+
     """
     basic_freqs, harmonic_freqs = split_frequencies(frequencies, epsilon)
     freqs_array = np.diag(np.ones(len(basic_freqs), dtype=int))
@@ -278,15 +291,14 @@ def frequencies_combination(frequencies, epsilon):
     return basic_freqs, freqs_array
 
 
-def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
+def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: list) -> ndarray:
     """
     Prepare initial parameters for the sum of sines function.
 
     Parameters
     ----------
-    approximate_parameters : ndarray
-        A list with parameters for each sine, i.e. amplitude, frequency,
-        phase, y0.
+    approximate_param : ndarray
+        A list with parameters for each sine, i.e. amplitude, frequency, phase, y0.
     basic_frequencies : list
         A list with basic frequencies.
 
@@ -294,22 +306,20 @@ def initial_sines_sum_parameters(approximate_parameters, basic_frequencies):
     -------
     parameters : ndarray
         Initial parameters for further fitting.
+
     """
     parameters = np.array(basic_frequencies)
-    amplitudes_phases = np.append(approximate_parameters[:, :1],
-                                  approximate_parameters[:, 2:3],
-                                  axis=1).flatten()
+    amplitudes_phases = np.append(approximate_param[:, :1], approximate_param[:, 2:3], axis=1).flatten()
     parameters = np.append(parameters, amplitudes_phases)
-    parameters = np.append(parameters, approximate_parameters[:, -1].sum())
+    parameters = np.append(parameters, approximate_param[:, -1].sum())
 
     return parameters
 
 
-def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
+def fit_final_curve(lightcurve: ndarray, frequencies: list, epsilon: float = 1e-3) -> ndarray:
     """
-    Fit a final curve to the light curve using a non-linear least squares
-    method. The curve is composed of a sum of sines. The frequency parameters
-    are limited only to basic frequencies. Some sines can be harmonics or have
+    Fit a final curve to the light curve using a non-linear least squares method. The curve is composed of a sum
+    of sines. The frequency parameters are limited only to basic frequencies. Some sines can be harmonics or have
     frequencies equal to linear combinations of the basic frequencies.
 
     Parameters
@@ -319,17 +329,17 @@ def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     frequencies : list
         A list with all frequencies delivered by input.
     epsilon : float
-        If a single frequency is compared to the linear combination of another
-        frequencies, the epsilon means tolerance in this comparison.
+        If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
+        in this comparison.
 
     Returns
     -------
     parameters : ndarray
         An array with parameters which describe a fitted function.
+
     """
     basic_freqs, freqs_comb = frequencies_combination(frequencies, epsilon)
-    approx_param = approximate_parameters(lightcurve,
-                                          np.dot(basic_freqs, freqs_comb.T))
+    approx_param = approximate_parameters(lightcurve, np.dot(basic_freqs, freqs_comb.T).tolist())
     func = final_sines_sum(freqs_comb)
     time, mag, err = lightcurve[:, 0], lightcurve[:, 1], lightcurve[:, 2]
     x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
@@ -339,55 +349,59 @@ def fit_final_curve(lightcurve, frequencies, epsilon=1e-3):
     return parameters
 
 
-def final_parameters(parameters, frequencies_combination):
+def final_parameters(parameters: ndarray, frequencies_comb: ndarray) -> ndarray:
     """
-    Reformat parameters from a non-linear least squares fitting which describe
-    a fitted curve. The curve is composed of sum of sines function.
+    Reformat parameters from a non-linear least squares fitting which describe a fitted curve. The curve is composed
+    of sum of sines function.
 
     Parameters
     ----------
     parameters : ndarray
-       An array with parameters. This array contains only basic frequencies and
-       the rest of the parameters.
-    frequencies_combination : ndarray
-       An (n,m)-shape array with integers. n denotes a number of all
-       frequencies (base and their combinations), m indicates basic
-       frequencies.
+       An array with parameters. This array contains only basic frequencies and the rest of the parameters.
+    frequencies_comb : ndarray
+       An (n,m)-shape array with integers:
+       - n: a number of all frequencies (base and their combinations)
+       - m: a number of basic frequencies.
 
     Returns
     -------
     param : ndarray
-        Reformatted parameters. For each fitted sine function this array
-        contains a set of parameters: amplitude, frequency, phase and one
-        y0 value for the fitted curve.
+        Reformatted parameters. For each fitted sine function this array contains a set of parameters:
+        amplitude, frequency, phase and one y0 value for the fitted curve.
+
     """
-    base_size = frequencies_combination.shape[1]
+    base_size = frequencies_comb.shape[1]
     param = np.array(parameters[-1])
-    freqs = np.dot(parameters[:base_size], frequencies_combination.T)
-    n_parameters = int((len(parameters) - base_size - 1)/2)
+    freqs = np.dot(parameters[:base_size], frequencies_comb.T)
+    n_parameters = int((len(parameters) - base_size - 1) / 2)
 
     for i in range(n_parameters):
-        param = np.append(param, parameters[2*i + base_size])
+        param = np.append(param, parameters[2 * i + base_size])
         param = np.append(param, freqs[i])
-        param = np.append(param,
-                          normalize_phase(parameters[2*i + 1 + base_size]))
+        param = np.append(param, normalize_phase(parameters[2 * i + 1 + base_size]))
 
     return param
 
 
-def normalize_phase(phase):
+def normalize_phase(phase_param: float) -> float:
     """
-    Shift a phase angle to the (0, 2*pi) interval.
+    Shift a phase angle to the (0, 2pi) interval.
 
     Parameters
     ----------
-    phase : float
+    phase_param : float
         A value of phase in radians.
+
+    Returns
+    -------
+    float
+        A value of phase limited to (0, 2pi) interval.
+
     """
-    return phase - 2*np.pi*(phase//(2*np.pi))
+    return phase_param - 2 * np.pi * (phase_param // (2 * np.pi))
 
 
-def print_parameters(parameters):
+def print_parameters(parameters: ndarray) -> None:
     """
     Print parameters of sines in a nice format:
 
@@ -401,18 +415,19 @@ def print_parameters(parameters):
     ----------
     parameters : ndarray
         y0, amplitude1, frequency1, phase1, amplitude2, frequency2, phase2, ...
+
     """
     fmt = "{0:16.10f}"
     print(fmt.format(parameters[0]))
     fmt += " {1:16.10f} {2:16.10f}"
 
-    for i, par in enumerate(parameters[1:].reshape(-1, 3)):
+    for par in parameters[1:].reshape(-1, 3):
         print(fmt.format(*par))
 
 
-def sines_sum(parameters):
+def sines_sum(parameters: ndarray) -> Callable:
     """
-    Construct sum of sines for given parameters.
+    Construct a sum of sines for given parameters.
 
     Parameters
     ----------
@@ -424,22 +439,23 @@ def sines_sum(parameters):
     function
         f(x) = amplitude1*sin(2*pi*frequency1*x + phase1) +
                amplitude2*sin(2*pi*frequency2*x + phase2) + ... + y0
+
     """
     par = parameters
 
-    def func(x):
+    def _sines_sum(x):
         y = 0
 
-        for i in range(len(parameters)//3):
+        for i in range(len(parameters) // 3):
             i *= 3
-            y += par[i+1]*np.sin(2*np.pi*par[i+2]*x + par[i+3])
+            y += par[i + 1] * np.sin(2 * np.pi * par[i + 2] * x + par[i + 3])
 
         return y + par[0]
 
-    return func
+    return _sines_sum
 
 
-def substract_model(data, model):
+def substract_model(data: ndarray, model: Callable) -> ndarray:
     """
     Substract a model from the second column of the data.
 
@@ -454,13 +470,14 @@ def substract_model(data, model):
     -------
     data : ndarray
         Updated data: column2 = column2 - model(column1)
+
     """
     data[:, 1] -= model(data[:, 0])
 
     return data
 
 
-def save_residuals(lightcurve, parameters, filename):
+def save_residuals(lightcurve: ndarray, parameters: ndarray, filename: str) -> None:
     """
     Save residuals of a light curve to the file.
 
