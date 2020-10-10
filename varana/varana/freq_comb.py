@@ -3,11 +3,14 @@ Check whether a single frequency is made of linear combination of another
 frequencies.
 
 """
-import numpy as np
 from itertools import product
+from typing import Generator
+
+import numpy as np
+from numpy import ndarray
 
 
-def coefficients_generator(size, minimum=-10, maximum=10):
+def coefficients_generator(size: int, minimum: int = -10, maximum: int = 10) -> Generator[ndarray, None, None]:
     """
     Create a generator of coefficients of linear combination of frequencies,
     i.e. C1, C2, C3, ...: (C1*f1 + C2*f2 + ...)
@@ -20,8 +23,14 @@ def coefficients_generator(size, minimum=-10, maximum=10):
         A lower bound of each coefficient.
     maximum : int
         An upper bound of each coefficient.
+
+    Returns
+    -------
+    Generator
+        Cartesian product of all numbers from min to max and given size.
+
     """
-    range_list = []
+    range_list = list()
 
     for _ in range(size):
         range_list.append(range(minimum, maximum + 1))
@@ -30,12 +39,12 @@ def coefficients_generator(size, minimum=-10, maximum=10):
         yield np.array(row)
 
 
-def linear_combination(frequencies, frequency, minimum=-10, maximum=10,
-                       epsilon=1e-3):
+def linear_combination(
+    frequencies: list, frequency: float, minimum: int = -10, maximum: int = 10, epsilon: float = 1e-3
+) -> ndarray:
     """
     Check whether a frequency is made of linear combination of frequencies:
-    f0 = (C1*f1 + C2*f2 + ...). If is, choose the ones which minimize a sum
-    of square values.
+    f0 = (C1*f1 + C2*f2 + ...). If it is, choose the one which minimizes a sum of square values.
 
     Parameters
     ----------
@@ -54,6 +63,7 @@ def linear_combination(frequencies, frequency, minimum=-10, maximum=10,
     -------
     coefficients_array : ndarray
         An array with coefficients.
+
     """
     coeff_iter = coefficients_generator(len(frequencies), minimum, maximum)
     frequencies = np.array(frequencies)
