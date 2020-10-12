@@ -3,21 +3,25 @@
 Trim a light curve using the sigma clipping or a manual rejection.
 
 """
-import matplotlib.pyplot as plt
-import numpy.ma as ma
-from matplotlib.widgets import Cursor
-from numpy import genfromtxt, std, arange, savetxt, bool_
+from argparse import ArgumentParser, RawTextHelpFormatter
 from copy import deepcopy
 from os.path import basename, splitext, dirname, join
-from argparse import ArgumentParser, RawTextHelpFormatter
 from textwrap import dedent
+from typing import Tuple
+
+import matplotlib.pyplot as plt
+import numpy.ma as ma
+from matplotlib.axes import Axes
+from matplotlib.backend_bases import MouseEvent
+from matplotlib.widgets import Cursor
+from numpy import genfromtxt, std, arange, savetxt, bool_, ndarray
+from numpy.ma import masked_array
+
+limit = list()
+lim = list()
 
 
-limit = []
-lim = []
-
-
-def get_data(filename):
+def get_data(filename: str) -> ndarray:
     """
     Alias for the numpy.genfromtxt function.
 
@@ -30,14 +34,14 @@ def get_data(filename):
     -------
     ndarray
         The data from the input file stored in an ndarray object.
+
     """
     return genfromtxt(filename)
 
 
-def trim(data, lower_cut=0, upper_cut=0):
+def trim(data: ndarray, lower_cut: float = 0.0, upper_cut: float = 0.0) -> masked_array:
     """
-    Trim the second column of the data. If lower_cut and upper_cut are both
-    equal 0, then the trim bases on 3 x sigma clipping.
+    Trim the second column of the data. If lower_cut and upper_cut are both equal 0.0 then the trim will base on 3s.
 
     Parameters
     ----------
@@ -54,19 +58,20 @@ def trim(data, lower_cut=0, upper_cut=0):
     -------
     masked_data : MaskedArray
         The ndarray with masked outstanding points in the second column.
+
     """
-    if (lower_cut == 0 and upper_cut == 0):
-        trim_data = sigma_clipping(data)
+    if lower_cut == 0.0 and upper_cut == 0.0:
+        trimmed_data = sigma_clipping(data)
     else:
-        trim_data = cutoff(data, lower_cut, upper_cut)
+        trimmed_data = cutoff(data, lower_cut, upper_cut)
 
-    return trim_data
+    return trimmed_data
 
 
-def sigma_clipping(data):
+def sigma_clipping(data: ndarray) -> masked_array:
     """
-    Filter the second column in the data array. Calculate a mean value (m),
-    a standard deviation (s) and reject points with values: m +/- 3s.
+    Filter the second column in the data array. Calculate a mean value (m), a standard deviation (s) and reject points
+    with values: m +/- 3s.
 
     Parameters
     ----------
@@ -77,18 +82,21 @@ def sigma_clipping(data):
     -------
     masked_data : MaskedArray
         The ndarray with masked clipped-points in the second column.
+
     """
     masked_data = ma.masked_array(data)
 
     for i in range(masked_data.shape[1]):
         masked_data[:, i] = ma.masked_where(
-            (data[:, 1] < data[:, 1].mean() - 3*std(data[:, 1])) |
-            (data[:, 1] > data[:, 1].mean() + 3*std(data[:, 1])), data[:, i])
+            (data[:, 1] < data[:, 1].mean() - 3 * std(data[:, 1]))
+            | (data[:, 1] > data[:, 1].mean() + 3 * std(data[:, 1])),
+            data[:, i],
+        )
 
     return masked_data
 
 
-def cutoff(data, lower_cut, upper_cut):
+def cutoff(data: ndarray, lower_cut: float, upper_cut: float) -> masked_array:
     """
     Cut-off the values in the second column of data array.
 
@@ -105,18 +113,18 @@ def cutoff(data, lower_cut, upper_cut):
     -------
     masked_data : MaskedArray
         The ndarray with masked clipped-points in the second column.
+
     """
     masked_data = ma.masked_array(data)
     masked_data.mask = False
 
     for i in range(masked_data.shape[1]):
-        masked_data[:, i] = ma.masked_where(
-            (data[:, 1] < lower_cut) | (data[:, 1] > upper_cut), data[:, i])
+        masked_data[:, i] = ma.masked_where((data[:, 1] < lower_cut) | (data[:, 1] > upper_cut), data[:, i])
 
     return masked_data
 
 
-def x_domain(time):
+def x_domain(time: ndarray) -> ndarray:
     """
     Define an x domain for time vector that its points are equal separated.
 
@@ -129,16 +137,17 @@ def x_domain(time):
     -------
     ndarray
         The transformed time vector.
+
     """
     t = deepcopy(time)
     t.mask = False
 
-    return arange(t.min(), t.max(), (t.max() - t.min())/len(t))
+    return arange(t.min(), t.max(), (t.max() - t.min()) / len(t))
 
 
-def split_filename(filename):
+def split_filename(filename: str) -> Tuple[str, str]:
     """
-    Split a filename into a name and en extenstion.
+    Split a filename into a name and an extension.
 
     Parameters
     ----------
@@ -149,31 +158,41 @@ def split_filename(filename):
     -------
     tuple
         A tuple: (basename, extension).
+
     """
     return splitext(basename(filename))
 
 
-def _draw_plot(ax, data, lower_line, upper_line, markersize=2):
+def _draw_plot(ax: Axes, data: masked_array, lower_line: int, upper_line: int, marker_size: int = 2) -> None:
     ax.set_xlabel("Time")
     ax.set_ylabel("Brightness [mag]")
     ax.invert_yaxis()
 
     if not (lower_line == 0 and upper_line == 0):
-        ax.plot(x_domain(data[:, 0]), [lower_line]*len(x_domain(data[:, 0])),
-                color="gray", linewidth=0.8, linestyle="dashed")
-        ax.plot(x_domain(data[:, 0]), [upper_line]*len(x_domain(data[:, 0])),
-                color="gray", linewidth=0.8, linestyle="dashed")
+        ax.plot(
+            x_domain(data[:, 0]),
+            [lower_line] * len(x_domain(data[:, 0])),
+            color="gray",
+            linewidth=0.8,
+            linestyle="dashed",
+        )
+        ax.plot(
+            x_domain(data[:, 0]),
+            [upper_line] * len(x_domain(data[:, 0])),
+            color="gray",
+            linewidth=0.8,
+            linestyle="dashed",
+        )
 
-    ax.plot(data[:, 0], data[:, 1], '.', markersize=markersize)
+    ax.plot(data[:, 0], data[:, 1], ".", markersize=marker_size)
     data.mask = ~data.mask
-    ax.plot(data[:, 0], data[:, 1], 'r.', markersize=markersize)
+    ax.plot(data[:, 0], data[:, 1], "r.", markersize=marker_size)
     data.mask = ~data.mask
 
 
-def display_plot(ax, data, lower_line, upper_line):
+def display_plot(ax: Axes, data: masked_array, lower_line: int, upper_line: int) -> None:
     """
-    Display an interactive plot. Mark lower and upper limit of magnitude
-    by clicking on the plot.
+    Display an interactive plot. Mark lower and upper limit of magnitude by clicking on the plot.
 
     Parameters
     ----------
@@ -185,28 +204,29 @@ def display_plot(ax, data, lower_line, upper_line):
         A bottom cut-off for magnitude.
     upper_line : float
         An upper cut-off for magnitude.
+
     """
     ax.cla()
     _draw_plot(ax, data, lower_line, upper_line, 4)
-    cursor = Cursor(ax, useblit=True, color='gray', linewidth=0.5)
-    figure.canvas.mpl_connect('button_press_event', _onclick)
+    _ = Cursor(ax, useblit=True, color="gray", linewidth=0.5)
+    fig.canvas.mpl_connect("button_press_event", _onclick)
     plt.show()
 
 
-def _onclick(event):
+def _onclick(event: MouseEvent) -> None:
     global limit, lim
     limit.append(event.ydata)
 
     if len(limit) == 2:
         if len(set(limit)) == 1:
-            limit = []
+            limit = list()
         else:
             lim = sorted(deepcopy(limit))
-            limit = []
-            display_plot(ax, cutoff(data, lim[0], lim[1]), lim[0], lim[1])
+            limit = list()
+            display_plot(axs, cutoff(input_data, lim[0], lim[1]), lim[0], lim[1])
 
 
-def save_plot(data, filename, lower_line=0, upper_line=0):
+def save_plot(data: masked_array, filename: str, lower_line: int = 0, upper_line: int = 0) -> None:
     """
     Save a plot to a file.
 
@@ -220,16 +240,16 @@ def save_plot(data, filename, lower_line=0, upper_line=0):
         A bottom cut-off for magnitude.
     upper_line : float
         An upper cut-off for magnitude.
+
     """
     figure = plt.figure(figsize=(10, 5), dpi=150)
     ax = figure.add_subplot(111)
     _draw_plot(ax, data, lower_line, upper_line)
-    png_filename = join(dirname(filename), split_filename(filename)[0]
-                        + ".png")
+    png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
 
 
-def filter_lightcurve(data):
+def filter_lightcurve(data: masked_array) -> ndarray:
     """
     Filter the data removing outstanding points, i.e. masked rows.
 
@@ -242,6 +262,7 @@ def filter_lightcurve(data):
     -------
     ndarray
         The (n, 3)-shaped array without outstanding points.
+
     """
     if type(data.mask) == bool_:
         return data
@@ -252,86 +273,98 @@ def filter_lightcurve(data):
 
 
 if __name__ == "__main__":
-    argparser = ArgumentParser(
-        prog='trim.py',
-        description='>> Removes outstanding points from a light curve <<',
-        epilog='Copyright (c) 2019 Przemysław Bruś',
-        formatter_class=RawTextHelpFormatter
+    arg_parser = ArgumentParser(
+        prog="trim.py",
+        description=">> Removes outstanding points from a light curve <<",
+        epilog="Copyright (c) 2020 Przemysław Bruś",
+        formatter_class=RawTextHelpFormatter,
     )
 
-    argparser.add_argument(
-        'input_lightcurve',
-        help=dedent('''\
+    arg_parser.add_argument(
+        "input_lightcurve",
+        help=dedent(
+            """\
         The name of a file which stores light curve data.
         ------------------------------------
         The file must contain three columns:
         time magnitude magnitude_error
 
-        ''')
+        """
+        ),
     )
 
-    argparser.add_argument(
-        'output_lightcurve',
-        help=dedent('''\
+    arg_parser.add_argument(
+        "output_lightcurve",
+        help=dedent(
+            """\
         The name of a file which will store a filtered light curve.
 
-        ''')
+        """
+        ),
     )
 
-    argparser.add_argument(
-        '--min',
-        help=dedent('''\
+    arg_parser.add_argument(
+        "--min",
+        help=dedent(
+            """\
         The minimum value of magnitude.
 
-        '''),
-        dest='min',
+        """
+        ),
+        dest="min",
         type=float,
-        default=0
+        default=0.0,
     )
 
-    argparser.add_argument(
-        '--max',
-        help=dedent('''\
+    arg_parser.add_argument(
+        "--max",
+        help=dedent(
+            """\
         The maximum value of magnitude.
 
-        '''),
-        dest='max',
+        """
+        ),
+        dest="max",
         type=float,
-        default=0
+        default=0.0,
     )
 
-    argparser.add_argument(
-        '--display',
-        help=dedent('''\
+    arg_parser.add_argument(
+        "--display",
+        help=dedent(
+            """\
         Display a plot.
 
-        '''),
-        action='store_true'
+        """
+        ),
+        action="store_true",
     )
 
-    argparser.add_argument(
-        '--image',
-        help=dedent('''\
+    arg_parser.add_argument(
+        "--image",
+        help=dedent(
+            """\
         Save a plot to the PNG file.
         The name of the image will be the same as for output file.
 
-        '''),
-        action='store_true'
+        """
+        ),
+        action="store_true",
     )
 
-    args = argparser.parse_args()
+    args = arg_parser.parse_args()
     try:
-        data = get_data(args.input_lightcurve)
+        input_data = get_data(args.input_lightcurve)
     except OSError as error:
         print(error)
         exit()
 
-    trim_data = trim(data, args.min, args.max)
+    trim_data = trim(input_data, args.min, args.max)
 
     if args.display:
-        figure = plt.figure()
-        ax = figure.add_subplot(111)
-        display_plot(ax, trim_data, args.min, args.max)
+        fig = plt.figure()
+        axs = fig.add_subplot(111)
+        display_plot(axs, trim_data, args.min, args.max)
         if lim != []:
             trim_data = trim(trim_data, lim[0], lim[1])
 
@@ -342,5 +375,4 @@ if __name__ == "__main__":
         else:
             save_plot(trim_data, args.output_lightcurve, args.min, args.max)
 
-    savetxt(args.output_lightcurve, filter_lightcurve(trim_data),
-            fmt="%16.6f %9.4f %7.4f")
+    savetxt(args.output_lightcurve, filter_lightcurve(trim_data), fmt="%18.7f %15.7f %15.7f")
