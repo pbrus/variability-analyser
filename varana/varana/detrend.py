@@ -3,7 +3,7 @@ Detrend a light curve removing seasonal deviations.
 
 """
 from os.path import basename, splitext, dirname, join
-from typing import Callable
+from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
 from numpy import genfromtxt, arange, std, delete, where, stack
@@ -115,7 +115,7 @@ def warn_rejected_points(filename: str) -> None:
     print("Rejected too many points from {0:s}".format(filename))
 
 
-def unpack_data(data: ndarray) -> tuple:
+def unpack_data(data: ndarray) -> Tuple[ndarray, ndarray, ndarray]:
     """
     Unpack data to the tuple.
 
@@ -260,9 +260,9 @@ def y_domain_spline(spline_func: Callable, x_domain: ndarray) -> ndarray:
     return spline_func(x_domain)
 
 
-def split_filename(filename: str) -> tuple:
+def split_filename(filename: str) -> Tuple[str, str]:
     """
-    Split a filename into a name and en extenstion.
+    Split a filename into a name and an extension.
 
     Parameters
     ----------

@@ -3,7 +3,7 @@ Fit a sum of sines to the light curve.
 
 """
 from math import sqrt, pow, atan2
-from typing import Callable
+from typing import Callable, Tuple
 from warnings import filterwarnings
 
 import numpy as np
@@ -230,7 +230,7 @@ def final_sines_sum(linear_comb: ndarray) -> Callable:
     return _sines_sum
 
 
-def split_frequencies(frequencies: list, epsilon: float) -> tuple:
+def split_frequencies(frequencies: list, epsilon: float) -> Tuple[list, list]:
     """
     Split frequencies into two lists.
 
@@ -260,7 +260,7 @@ def split_frequencies(frequencies: list, epsilon: float) -> tuple:
     return basic_freqs, comb_freqs
 
 
-def frequencies_combination(frequencies: list, epsilon: float) -> tuple:
+def frequencies_combination(frequencies: list, epsilon: float) -> Tuple[list, list]:
     """
     Select from all frequencies only those which are independent and generate an array with coefficients of linear
     combinations of basic frequencies.
