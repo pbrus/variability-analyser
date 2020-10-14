@@ -1,61 +1,73 @@
 #!/usr/bin/env python3
+"""
+Phase a light curve with a specific frequency.
 
+"""
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
-from varana.phase import *
 
+from varana.phase import display_plot, get_model, prepare_data, save_phased_lightcurve, save_plot
 
-argparser = ArgumentParser(
-    prog='phase.py',
-    description='>> Phase a light curve <<',
-    epilog='Copyright (c) 2019 Przemysław Bruś',
-    formatter_class=RawTextHelpFormatter
+arg_parser = ArgumentParser(
+    prog="phase.py",
+    description=">> Phase a light curve <<",
+    epilog="Copyright (c) 2020 Przemysław Bruś",
+    formatter_class=RawTextHelpFormatter,
 )
 
-argparser.add_argument(
-    'lightcurve',
-    help=dedent('''\
+arg_parser.add_argument(
+    "lightcurve",
+    help=dedent(
+        """\
     The name of a file which stores light curve data.
     ------------------------------------
     The file must contain three columns:
     time magnitude magnitude_error
 
-    ''')
+    """
+    ),
 )
 
-argparser.add_argument(
-    'frequency',
-    help=dedent('''\
+arg_parser.add_argument(
+    "frequency",
+    help=dedent(
+        """\
     A value of frequency which phases the light curve with.
 
-    '''),
-    type=float
+    """
+    ),
+    type=float,
 )
 
-argparser.add_argument(
-    '-p',
-    help=dedent('''\
+arg_parser.add_argument(
+    "-p",
+    help=dedent(
+        """\
     The positional argument "frequency" is a period.
 
-    '''),
-    action='store_true'
+    """
+    ),
+    action="store_true",
 )
 
-argparser.add_argument(
-    '--phase',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--phase",
+    help=dedent(
+        """\
     The number of phases.
     (default = 2)
 
-    '''),
+    """
+    ),
     metavar="N",
     type=int,
-    default=2
+    default=2,
 )
 
-argparser.add_argument(
-    '--model',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--model",
+    help=dedent(
+        """\
     A name of the file with a model defined as:
 
     y_intercept
@@ -67,46 +79,55 @@ argparser.add_argument(
     The amplitude, frequency and phase describe a single sine
     which the model is made of.
 
-    '''),
+    """
+    ),
     metavar="filename",
-    type=str
+    type=str,
 )
 
-argparser.add_argument(
-    '--save',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--save",
+    help=dedent(
+        """\
     Save the phased light curve to the file.
 
-    '''),
+    """
+    ),
     metavar="filename",
-    type=str
+    type=str,
 )
 
-argparser.add_argument(
-    '--display',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--display",
+    help=dedent(
+        """\
     Display a plot.
 
-    '''),
-    action='store_true'
+    """
+    ),
+    action="store_true",
 )
 
-argparser.add_argument(
-    '--image',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--image",
+    help=dedent(
+        """\
     Save a plot to the PNG file.
     The name of the image will be the same as for output file.
 
-    '''),
-    action='store_true'
+    """
+    ),
+    action="store_true",
 )
 
-args = argparser.parse_args()
+args = arg_parser.parse_args()
 
 if args.p:
-    frequency = 1/args.frequency
+    frequency = 1 / args.frequency
 else:
     frequency = args.frequency
+
+phase, magnitude, model = None, None, None
 
 try:
     phase, magnitude = prepare_data(args.lightcurve, frequency, args.phase)
