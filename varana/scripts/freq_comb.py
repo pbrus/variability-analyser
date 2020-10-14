@@ -1,83 +1,96 @@
 #!/usr/bin/env python3
+"""
+Check whether a single frequency is made of linear combination of another frequencies.
 
+"""
 from argparse import ArgumentParser, RawTextHelpFormatter
 from textwrap import dedent
-from varana.freq_comb import *
 
+from varana.freq_comb import linear_combination
 
-argparser = ArgumentParser(
-    prog='freq_comb.py',
-    description=dedent('''\
-    >> Check whether a single frequency is made of
-    >> linear combination of frequencies'''),
-    epilog='Copyright (c) 2019 Przemysław Bruś',
-    formatter_class=RawTextHelpFormatter
+arg_parser = ArgumentParser(
+    prog="freq_comb.py",
+    description=dedent(
+        """\
+    >> Check whether a single frequency is made
+    >> of linear combination of frequencies"""
+    ),
+    epilog="Copyright (c) 2020 Przemysław Bruś",
+    formatter_class=RawTextHelpFormatter,
 )
 
-argparser.add_argument(
-    '--base',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--base",
+    help=dedent(
+        """\
     A list of basic frequencies.
 
-    '''),
-    nargs='+',
-    metavar='f1',
+    """
+    ),
+    nargs="+",
+    metavar="f1",
     type=float,
-    required=True
+    required=True,
 )
 
-argparser.add_argument(
-    '--freq',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--freq",
+    help=dedent(
+        """\
     A single frequency.
 
-    '''),
-    metavar='f',
+    """
+    ),
+    metavar="f",
     type=float,
-    required=True
+    required=True,
 )
 
-argparser.add_argument(
-    '--min',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--min",
+    help=dedent(
+        """\
     A minimum value (int) of all coefficients.
-    (default = -10)
+    (default = -5)
 
-    '''),
-    metavar='min',
+    """
+    ),
+    metavar="min",
     type=int,
-    default=-10
+    default=-5,
 )
 
-argparser.add_argument(
-    '--max',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--max",
+    help=dedent(
+        """\
     A maximum value (int) of all coefficients.
-    (default = 10)
+    (default = 5)
 
-    '''),
-    metavar='max',
+    """
+    ),
+    metavar="max",
     type=int,
-    default=10
+    default=5,
 )
 
-argparser.add_argument(
-    '--eps',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--eps",
+    help=dedent(
+        """\
     A comparison accuracy of a single frequency
     and linear combination.
-    (default = 0.001)
+    (default = 0.00001)
 
-    '''),
-    metavar='eps',
+    """
+    ),
+    metavar="eps",
     type=float,
-    default=1e-3
+    default=1e-5,
 )
 
-args = argparser.parse_args()
-combination = linear_combination(args.base, args.freq,
-                                 minimum=args.min, maximum=args.max,
-                                 epsilon=args.eps)
+args = arg_parser.parse_args()
+combination = linear_combination(args.base, args.freq, minimum=args.min, maximum=args.max, epsilon=args.eps)
 
 if combination.any():
     print(*combination)

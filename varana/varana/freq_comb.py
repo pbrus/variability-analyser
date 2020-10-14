@@ -1,6 +1,5 @@
 """
-Check whether a single frequency is made of linear combination of another
-frequencies.
+Check whether a single frequency is made of linear combination of another frequencies.
 
 """
 from itertools import product
