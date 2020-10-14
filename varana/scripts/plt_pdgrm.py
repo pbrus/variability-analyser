@@ -1,49 +1,59 @@
 #!/usr/bin/env python3
+"""
+Display or save a periodogram to a file.
 
+"""
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from textwrap import dedent
-from varana.plt_pdgrm import *
 
+from varana.plt_pdgrm import display_periodogram, get_data, save_periodogram
 
-argparser = ArgumentParser(
-    prog='plt_pdgrm.py',
-    description='>> Display a periodogram <<',
-    epilog='Copyright (c) 2019 Przemysław Bruś',
-    formatter_class=RawTextHelpFormatter
+arg_parser = ArgumentParser(
+    prog="plt_pdgrm.py",
+    description=">> Display a periodogram <<",
+    epilog="Copyright (c) 2020 Przemysław Bruś",
+    formatter_class=RawTextHelpFormatter,
 )
 
-argparser.add_argument(
-    'periodogram',
-    help=dedent('''\
-    The name of a file which stores a periodogram.
+arg_parser.add_argument(
+    "periodogram",
+    help=dedent(
+        """\
+    The name of a file with periodogram.
     ------------------------------------
     The file must contain two columns:
     frequency amplitude
 
-    ''')
+    """
+    ),
 )
 
-argparser.add_argument(
-    '--display',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--display",
+    help=dedent(
+        """\
     Display a periodogram.
 
-    '''),
-    action='store_true'
+    """
+    ),
+    action="store_true",
 )
 
-argparser.add_argument(
-    '--image',
-    help=dedent('''\
+arg_parser.add_argument(
+    "--image",
+    help=dedent(
+        """\
     Save a periodogram to the PNG file.
 
-    '''),
+    """
+    ),
     metavar="filename",
     type=str,
-    default=None
+    default=None,
 )
 
-args = argparser.parse_args()
+args = arg_parser.parse_args()
+frequency, amplitude = None, None
 
 try:
     frequency, amplitude = get_data(args.periodogram)

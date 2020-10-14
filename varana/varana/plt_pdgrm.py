@@ -1,5 +1,5 @@
 """
-Display or save to a file a periodogram.
+Display or save a periodogram to a file.
 
 """
 from re import search
