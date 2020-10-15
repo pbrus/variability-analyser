@@ -7,7 +7,7 @@ from os.path import realpath, split
 
 import numpy as np
 
-from varana.trim import *
+from varana.trim import cutoff, filter_lightcurve, get_data, sigma_clipping, split_filename, trim, x_domain
 
 
 class TrimTest(unittest.TestCase):

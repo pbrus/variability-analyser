@@ -7,7 +7,21 @@ from os.path import realpath, split
 
 import numpy as np
 
-from varana.detrend import *
+from varana.detrend import (
+    calculate_kmeans,
+    detrend_data,
+    get_data,
+    sigma_clipping_magnitude,
+    sorted_centers,
+    spline_function,
+    spline_order,
+    split_filename,
+    too_much_points_rejected,
+    unpack_data,
+    valid_seasons_amount,
+    x_domain_spline,
+    y_domain_spline,
+)
 
 
 class DetrendTest(unittest.TestCase):

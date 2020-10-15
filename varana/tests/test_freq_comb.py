@@ -4,7 +4,9 @@ Test package for varana.freq_comb module
 """
 import unittest
 
-from varana.freq_comb import *
+import numpy as np
+
+from varana.freq_comb import coefficients_generator, linear_combination
 
 
 class FreqCombTest(unittest.TestCase):

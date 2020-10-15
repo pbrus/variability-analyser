@@ -5,7 +5,18 @@ Test package for varana.phase module
 import unittest
 from os.path import realpath, split
 
-from varana.phase import *
+import numpy as np
+
+from varana.phase import (
+    get_model,
+    multiply_phase,
+    prepare_data,
+    read_lightcurve,
+    read_model,
+    sines_sum,
+    split_filename,
+    time_to_phase,
+)
 
 
 class PhaseTest(unittest.TestCase):

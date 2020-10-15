@@ -5,7 +5,26 @@ Test package for varana.fit module
 import unittest
 from os.path import realpath, split
 
-from varana.fit import *
+import numpy as np
+
+from varana.fit import (
+    add_frequencies,
+    amplitude,
+    approximate_parameters,
+    approximate_sines_sum,
+    convert_linear_parameters,
+    final_parameters,
+    final_sines_sum,
+    fit_approximate_curve,
+    fit_final_curve,
+    frequencies_combination,
+    initial_sines_sum_parameters,
+    normalize_phase,
+    phase,
+    sines_sum,
+    split_frequencies,
+    substract_model,
+)
 
 
 class FitTest(unittest.TestCase):
