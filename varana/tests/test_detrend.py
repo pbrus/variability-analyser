@@ -68,18 +68,6 @@ class DetrendTest(unittest.TestCase):
         tuple_data = self.data[:, 0], self.data[:, 1], self.data[:, 2]
         self.assertTrue(np.array_equal(tuple_data, unpack_data(self.data)))
 
-    def test_calculate_kmeans(self):
-        clusters_centers = np.array(
-            [
-                [9.95274508e02, -9.85392445e-02],
-                [2.67177517e02, 2.65203604e-01],
-                [1.35113653e03, 6.14042550e-02],
-                [6.29255809e02, -6.68374040e-02],
-            ]
-        )
-        kmeans = calculate_kmeans(*unpack_data(self.data), clusters_number=4)
-        self.assertTrue(np.allclose(kmeans.cluster_centers_, clusters_centers))
-
     def test_sorted_centers(self):
         update_centers = np.array(
             [
