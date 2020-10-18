@@ -1,5 +1,5 @@
 """
-Test package for varana.trim module
+Test package for varana.trim module.
 
 """
 import unittest

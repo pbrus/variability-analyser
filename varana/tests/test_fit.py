@@ -1,5 +1,5 @@
 """
-Test package for varana.fit module
+Test package for varana.fit module.
 
 """
 import unittest

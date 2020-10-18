@@ -1,5 +1,5 @@
 """
-Test package for varana.detrend module
+Test package for varana.detrend module.
 
 """
 import unittest

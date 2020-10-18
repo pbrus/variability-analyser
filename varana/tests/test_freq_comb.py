@@ -1,5 +1,5 @@
 """
-Test package for varana.freq_comb module
+Test package for varana.freq_comb module.
 
 """
 import unittest
