@@ -59,7 +59,10 @@ then
 fi
 
 
-pip3 install -U varana
+cd varana
+python3 setup.py install
+cd ..
+
 
 if [ $? -ne 0 ]
 then
