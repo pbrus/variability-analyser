@@ -5,14 +5,11 @@ Phase a light curve with a specific frequency.
 from copy import deepcopy
 from os.path import basename, splitext, dirname, join
 from typing import Tuple, Callable
-from warnings import filterwarnings
 
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import ndarray
 from scipy.optimize import curve_fit
-
-filterwarnings("ignore", message="Covariance of the parameters could not be estimated")
 
 
 def read_lightcurve(filename: str) -> ndarray:

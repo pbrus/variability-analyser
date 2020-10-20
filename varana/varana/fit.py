@@ -4,15 +4,12 @@ Fit a sum of sines to the light curve.
 """
 from math import sqrt, pow, atan2
 from typing import Callable, Tuple
-from warnings import filterwarnings
 
 import numpy as np
 from numpy import ndarray
 from scipy.optimize import curve_fit
 
 from varana.freq_comb import linear_combination
-
-filterwarnings("ignore", message="Covariance of the parameters could not be estimated")
 
 
 def approximate_sines_sum(frequencies: list) -> Callable:
