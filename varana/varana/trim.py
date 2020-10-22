@@ -353,6 +353,8 @@ if __name__ == "__main__":
     )
 
     args = arg_parser.parse_args()
+    input_data = None
+
     try:
         input_data = get_data(args.input_lightcurve)
     except OSError as error:
@@ -365,7 +367,7 @@ if __name__ == "__main__":
         fig = plt.figure()
         axs = fig.add_subplot(111)
         display_plot(axs, trim_data, args.min, args.max)
-        if lim != []:
+        if lim:
             trim_data = trim(trim_data, lim[0], lim[1])
 
     if args.image:

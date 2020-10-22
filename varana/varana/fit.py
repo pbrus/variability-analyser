@@ -257,7 +257,7 @@ def split_frequencies(frequencies: list, epsilon: float) -> Tuple[list, list]:
     return basic_freqs, comb_freqs
 
 
-def frequencies_combination(frequencies: list, epsilon: float) -> Tuple[list, list]:
+def frequencies_combination(frequencies: list, epsilon: float) -> Tuple[list, ndarray]:
     """
     Select from all frequencies only those which are independent and generate an array with coefficients of linear
     combinations of basic frequencies.
