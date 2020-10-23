@@ -9,7 +9,13 @@ import numpy as np
 from numpy import ndarray
 
 
-def coefficients_generator(size: int, minimum: int = -10, maximum: int = 10) -> Generator[ndarray, None, None]:
+class ImproperBounds(Exception):
+    """Exception throwing when the bounds of coefficient are improper."""
+
+
+def coefficients_generator(
+    size: int, minimum: int = -5, maximum: int = 5, max_harmonic: int = 10
+) -> Generator[ndarray, None, None]:
     """
     Create a generator of coefficients of linear combination of frequencies,
     i.e. C1, C2, C3, ...: (C1*f1 + C2*f2 + ...)
@@ -22,17 +28,34 @@ def coefficients_generator(size: int, minimum: int = -10, maximum: int = 10) -> 
         A lower bound of each coefficient.
     maximum : int
         An upper bound of each coefficient.
+    max_harmonic : int
+        A maximum value for a harmonic. It should be greater than the upper bound of each coefficient.
 
     Returns
     -------
     Generator
         Cartesian product of all numbers from min to max and given size.
 
+    Raises
+    ------
+    ImproperBounds
+        Exception is raising when minimum >= maximum.
+
     """
+    if minimum >= maximum:
+        raise ImproperBounds(f"min={minimum} cannot be >= max={maximum}")
+
     range_list = list()
 
     for _ in range(size):
         range_list.append(range(minimum, maximum + 1))
+
+    if maximum < max_harmonic:
+        for i in range(maximum + 1, max_harmonic + 1):
+            arr = np.zeros((size, size), dtype=int)
+            arr[np.diag_indices(size)] = i
+            for row in arr:
+                yield row
 
     for row in product(*range_list):
         yield np.array(row)
