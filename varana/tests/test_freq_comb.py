@@ -19,13 +19,13 @@ def test_coefficient_generator_exception():
     "size, min, max, harm_max, n, result",
     [
         (2, -2, 2, 5, 1, np.array([3, 0])),
-        (2, -2, 2, 5, 3, np.array([5, 0])),
+        (2, -2, 2, 5, 3, np.array([4, 0])),
         (2, -2, 2, 5, 6, np.array([0, 5])),
         (2, -2, 2, 5, 9, np.array([-2, 0])),
         (3, -1, 1, 4, 1, np.array([2, 0, 0])),
-        (3, -1, 1, 4, 3, np.array([4, 0, 0])),
-        (3, -1, 1, 4, 4, np.array([0, 2, 0])),
-        (3, -1, 1, 4, 8, np.array([0, 0, 3])),
+        (3, -1, 1, 4, 3, np.array([0, 0, 2])),
+        (3, -1, 1, 4, 4, np.array([3, 0, 0])),
+        (3, -1, 1, 4, 8, np.array([0, 4, 0])),
         (3, -1, 1, 4, 10, np.array([-1, -1, -1])),
         (3, -1, 1, 4, 20, np.array([0, -1, 0])),
         (4, -2, 2, 1, 1, np.array([-2, -2, -2, -2])),
@@ -35,7 +35,7 @@ def test_coefficient_generator_exception():
 def test_coefficients_generator(size, min, max, harm_max, n, result):
     for i, coefficients in enumerate(coefficients_generator(size, min, max, harm_max)):
         if (i + 1) == n:
-            assert (coefficients == result).any()
+            assert (coefficients == result).all()
 
 
 class FreqCombTest(unittest.TestCase):
@@ -45,4 +45,4 @@ class FreqCombTest(unittest.TestCase):
         results = (np.array([3, -2, 1]), np.array([0, 4, 1]), np.array([False, False, False]), np.array([5, 0, 2]))
 
         for freq, res in zip(frequencies, results):
-            self.assertTrue((linear_combination(base, freq) == res).any())
+            self.assertTrue((linear_combination(base, freq) == res).all())

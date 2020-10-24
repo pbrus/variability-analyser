@@ -10,7 +10,7 @@ from numpy import ndarray
 
 
 class ImproperBounds(Exception):
-    """Exception throwing when the bounds of coefficient are improper."""
+    """Exception throwing if the bounds of coefficients are improper."""
 
 
 def coefficients_generator(
@@ -52,9 +52,7 @@ def coefficients_generator(
 
     if maximum < max_harmonic:
         for i in range(maximum + 1, max_harmonic + 1):
-            arr = np.zeros((size, size), dtype=int)
-            arr[np.diag_indices(size)] = i
-            for row in arr:
+            for row in i*np.eye(size, dtype=int):
                 yield row
 
     for row in product(*range_list):
