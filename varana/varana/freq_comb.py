@@ -3,10 +3,9 @@ Check whether a single frequency is made of linear combination of another freque
 
 """
 from itertools import product
-from typing import Generator
+from typing import Generator, List
 
 import numpy as np
-from numpy import ndarray
 
 
 class ImproperBounds(Exception):
@@ -15,7 +14,7 @@ class ImproperBounds(Exception):
 
 def coefficients_generator(
     size: int, minimum: int = -5, maximum: int = 5, max_harmonic: int = 10
-) -> Generator[ndarray, None, None]:
+) -> Generator[np.ndarray, None, None]:
     """
     Create a generator of coefficients of linear combination of frequencies,
     i.e. C1, C2, C3, ...: (C1*f1 + C2*f2 + ...)
@@ -52,16 +51,44 @@ def coefficients_generator(
 
     if maximum < max_harmonic:
         for i in range(maximum + 1, max_harmonic + 1):
-            for row in i*np.eye(size, dtype=int):
+            for row in i * np.eye(size, dtype=int):
                 yield row
 
     for row in product(*range_list):
         yield np.array(row)
 
 
+def get_most_likely_combination(coefficients_set: List[np.ndarray]) -> np.ndarray:
+    """
+    Filter a list of coefficients taking into account the most likely combination. Coefficients are chosen by
+    the following rules:
+
+        1. Leave lists of coefficients with the smallest number of elements.
+        2. Filter lists leaving those with the smallest value of the sum of square coefficients, i.e. C1^2 + C2^2 + ...
+        3. If still there is more than one list, choose the one that has the smallest number of negative coefficients.
+
+    Parameters
+    ----------
+    coefficients_set : list
+        A set of coefficient to filter
+
+    Returns
+    -------
+    ndarray
+        The most likely combination from the input set.
+
+    """
+    coeffs = [i for i in filter(lambda x: len(x) == len(sorted(coefficients_set, key=len)[0]), coefficients_set)]
+    coeffs = [
+        i for i in filter(lambda x: sum(x ** 2) == sum(sorted(coeffs, key=lambda x: sum(x ** 2))[0] ** 2), coeffs)
+    ]
+
+    return sorted(coeffs, key=lambda x: sum(x < 0))[0]
+
+
 def linear_combination(
     frequencies: list, frequency: float, minimum: int = -10, maximum: int = 10, epsilon: float = 1e-3
-) -> ndarray:
+) -> np.ndarray:
     """
     Check whether a frequency is made of linear combination of frequencies:
     f0 = (C1*f1 + C2*f2 + ...). If it is, choose the one which minimizes a sum of square values.

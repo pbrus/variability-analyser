@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import pytest
 
-from varana.freq_comb import coefficients_generator, ImproperBounds, linear_combination
+from varana.freq_comb import coefficients_generator, ImproperBounds, get_most_likely_combination, linear_combination
 
 
 def test_coefficient_generator_exception():
@@ -36,6 +36,29 @@ def test_coefficients_generator(size, min, max, harm_max, n, result):
     for i, coefficients in enumerate(coefficients_generator(size, min, max, harm_max)):
         if (i + 1) == n:
             assert (coefficients == result).all()
+
+
+@pytest.mark.parametrize(
+    "coefficients_set, result",
+    [
+        ([np.array([4, 1, -2]), np.array([3, -5, 2]), np.array([1, -2, 9])], np.array([4, 1, -2])),
+        ([np.array([2, 1]), np.array([-2, 1]), np.array([-1, 2]), np.array([-1, -2])], np.array([2, 1])),
+        (
+            [
+                np.array([3, 4, 5]),
+                np.array([3, -4, 9]),
+                np.array([2, 8]),
+                np.array([1, 1]),
+                np.array([3]),
+                np.array([9]),
+            ],
+            np.array([3]),
+        ),
+        ([np.array([2, 1])], np.array([2, 1])),
+    ],
+)
+def test_get_most_likely_combination(coefficients_set, result):
+    assert (get_most_likely_combination(coefficients_set) == result).all()
 
 
 class FreqCombTest(unittest.TestCase):
