@@ -3,7 +3,7 @@ Fit a sum of sines to the light curve.
 
 """
 from math import sqrt, pow, atan2
-from typing import Callable, Tuple
+from typing import Callable, Tuple, List
 
 import numpy as np
 from numpy import ndarray
@@ -12,7 +12,7 @@ from scipy.optimize import curve_fit
 from varana.freq_comb import linear_combination
 
 
-def approximate_sines_sum(frequencies: list) -> Callable:
+def approximate_sines_sum(frequencies: List[float]) -> Callable:
     """
     For given frequencies calculate a parameterized sum of sines. Each sine function is linearized, i.e.:
     A*sin(2*pi*x + fi) + y0 is equal: A1*sin(2*pi*x) + A2*cos(2*pi*x) + y0
@@ -20,7 +20,7 @@ def approximate_sines_sum(frequencies: list) -> Callable:
 
     Parameters
     ----------
-    frequencies : list
+    frequencies : List[float]
         A list with frequencies.
 
     Returns
@@ -115,7 +115,7 @@ def convert_linear_parameters(parameters: ndarray) -> ndarray:
     return parameters
 
 
-def add_frequencies(parameters: ndarray, frequencies: list) -> ndarray:
+def add_frequencies(parameters: ndarray, frequencies: List[float]) -> ndarray:
     """
     Add frequencies to the array with parameters of sum of sines function.
 
@@ -123,7 +123,7 @@ def add_frequencies(parameters: ndarray, frequencies: list) -> ndarray:
     ----------
     parameters : ndarray
        An array with all parameters of sum of sines function without frequencies.
-    frequencies : list
+    frequencies : List[float]
         A list with all frequencies delivered by input.
 
     Returns
@@ -141,7 +141,7 @@ def add_frequencies(parameters: ndarray, frequencies: list) -> ndarray:
     return updated_parameters.reshape(-1, 4)
 
 
-def fit_approximate_curve(lightcurve: ndarray, frequencies: list) -> ndarray:
+def fit_approximate_curve(lightcurve: ndarray, frequencies: List[float]) -> ndarray:
     """
     Fit an approximate curve to the light curve using a linear least squares method. The curve is composed of a sum of
     sines. Each sine has defined frequency.
@@ -150,7 +150,7 @@ def fit_approximate_curve(lightcurve: ndarray, frequencies: list) -> ndarray:
     ----------
     lightcurve : ndarray
        An array composed of three columns: time, magnitude, errors.
-    frequencies : list
+    frequencies : List[float]
         A list with all frequencies delivered by input.
 
     Returns
@@ -167,7 +167,7 @@ def fit_approximate_curve(lightcurve: ndarray, frequencies: list) -> ndarray:
     return parameters
 
 
-def approximate_parameters(lightcurve: ndarray, frequencies: list) -> ndarray:
+def approximate_parameters(lightcurve: ndarray, frequencies: List[float]) -> ndarray:
     """
     Calculate parameters of an approximate sum of sines.
 
@@ -175,7 +175,7 @@ def approximate_parameters(lightcurve: ndarray, frequencies: list) -> ndarray:
     ----------
     lightcurve : ndarray
        An array composed of three columns: time, magnitude, errors.
-    frequencies : list
+    frequencies : List[float]
         A list with all frequencies delivered by input.
 
     Returns
@@ -227,13 +227,13 @@ def final_sines_sum(linear_comb: ndarray) -> Callable:
     return _sines_sum
 
 
-def split_frequencies(frequencies: list, epsilon: float) -> Tuple[list, list]:
+def split_frequencies(frequencies: List[float], epsilon: float) -> Tuple[List[float], List[float]]:
     """
     Split frequencies into two lists.
 
     Parameters
     ----------
-    frequencies : list
+    frequencies : List[float]
         A list with frequencies.
     epsilon : float
         If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
@@ -257,14 +257,14 @@ def split_frequencies(frequencies: list, epsilon: float) -> Tuple[list, list]:
     return basic_freqs, comb_freqs
 
 
-def frequencies_combination(frequencies: list, epsilon: float) -> Tuple[list, ndarray]:
+def frequencies_combination(frequencies: List[float], epsilon: float) -> Tuple[List[float], ndarray]:
     """
     Select from all frequencies only those which are independent and generate an array with coefficients of linear
     combinations of basic frequencies.
 
     Parameters
     ----------
-    frequencies : list
+    frequencies : List[float]
         A list with frequencies.
     epsilon : float
         If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
@@ -288,7 +288,7 @@ def frequencies_combination(frequencies: list, epsilon: float) -> Tuple[list, nd
     return basic_freqs, freqs_array
 
 
-def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: list) -> ndarray:
+def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: List[float]) -> ndarray:
     """
     Prepare initial parameters for the sum of sines function.
 
@@ -296,7 +296,7 @@ def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: 
     ----------
     approximate_param : ndarray
         A list with parameters for each sine, i.e. amplitude, frequency, phase, y0.
-    basic_frequencies : list
+    basic_frequencies : List[float]
         A list with basic frequencies.
 
     Returns
@@ -313,7 +313,7 @@ def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: 
     return parameters
 
 
-def fit_final_curve(lightcurve: ndarray, frequencies: list, epsilon: float = 1e-3) -> ndarray:
+def fit_final_curve(lightcurve: ndarray, frequencies: List[float], epsilon: float = 1e-3) -> ndarray:
     """
     Fit a final curve to the light curve using a non-linear least squares method. The curve is composed of a sum
     of sines. The frequency parameters are limited only to basic frequencies. Some sines can be harmonics or have
@@ -323,7 +323,7 @@ def fit_final_curve(lightcurve: ndarray, frequencies: list, epsilon: float = 1e-
     ----------
     lightcurve : ndarray
        An array composed of three columns: time, magnitude, errors.
-    frequencies : list
+    frequencies : List[float]
         A list with all frequencies delivered by input.
     epsilon : float
         If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
