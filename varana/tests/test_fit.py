@@ -112,14 +112,14 @@ class FitTest(unittest.TestCase):
     def test_split_frequencies(self):
         frequencies = [1.2451, 2.3342, 3.2145, 4.4512, 4.5694]
         epsilons = [1e-4, 1e-3, 1e-2]
-        results = [[], [4.5694], [4.4512, 4.5694]]
+        results = [[], [], [4.4512]]
 
         for res, eps in zip(results, epsilons):
             self.assertEqual(split_frequencies(frequencies, eps)[-1], res)
 
     def test_frequencies_combination(self):
         frequencies = [1.2451, 2.3342, 3.2145, 4.4512, 4.5694]
-        comb_array = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [6, -4, 2]])
+        comb_array = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 1, 0]])
         comb = frequencies_combination(frequencies, 1e-2)[-1]
         self.assertTrue((comb == comb_array).all())
 

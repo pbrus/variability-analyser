@@ -2,8 +2,6 @@
 Test package for varana.freq_comb module.
 
 """
-import unittest
-
 import numpy as np
 import pytest
 
@@ -61,11 +59,19 @@ def test_get_most_likely_combination(coefficients_set, result):
     assert (get_most_likely_combination(coefficients_set) == result).all()
 
 
-class FreqCombTest(unittest.TestCase):
-    def test_linear_combination(self):
-        base = [1.64, 2.53, 7.85]
-        frequencies = (7.71, 17.97, 10.09, 23.9)
-        results = (np.array([3, -2, 1]), np.array([0, 4, 1]), np.array([False, False, False]), np.array([5, 0, 2]))
-
-        for freq, res in zip(frequencies, results):
-            self.assertTrue((linear_combination(base, freq) == res).all())
+@pytest.mark.parametrize(
+    "base, frequency, min, max, max_harm, result",
+    [
+        ([0.55, 1.10, 2.48, 3.87], 5.78, 0, 3, 3, np.array([0, 3, 1, 0])),
+        ([0.21, 0.49, 0.98, 5.03], 0.14, -1, 3, 3, np.array([3, -1, 0, 0])),
+        ([3.14, 6.28], 21.98, 0, 1, 7, np.array([7, 0])),
+        ([0.12, 1.09, 1.59], 10.00, -5, 5, 10, np.array([False, False, False])),
+        ([1.64, 2.53, 7.85, 9.11], -1.26, -1, 1, 1, np.array([0, 0, 1, -1])),
+        ([1.64, 2.53, 7.85], 7.71, -2, 3, 3, np.array([3, -2, 1])),
+        ([1.64, 2.53, 7.85], 17.97, 0, 4, 4, np.array([0, 4, 1])),
+        ([1.64, 2.53, 7.85], 10.09, -5, 5, 10, np.array([False, False, False])),
+        ([1.64, 2.53, 7.85], 23.90, -5, 5, 10, np.array([5, 0, 2])),
+    ],
+)
+def test_linear_combination(base, frequency, min, max, max_harm, result):
+    assert (linear_combination(base, frequency, min, max, max_harm) == result).all()

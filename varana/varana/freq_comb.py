@@ -93,15 +93,20 @@ def get_most_likely_combination(coefficients_set: List[np.ndarray]) -> np.ndarra
 
 
 def linear_combination(
-    frequencies: list, frequency: float, minimum: int = -10, maximum: int = 10, epsilon: float = 1e-3
+    base: List[float],
+    frequency: float,
+    minimum: int = -5,
+    maximum: int = 5,
+    max_harmonic: int = 10,
+    epsilon: float = 1e-5,
 ) -> np.ndarray:
     """
-    Check whether a frequency is made of linear combination of frequencies:
-    f0 = (C1*f1 + C2*f2 + ...). If it is, choose the one which minimizes a sum of square values.
+    Check whether a frequency is made of linear combination of frequencies: f0 = (C1*f1 + C2*f2 + ...)
+    If is more than one choose the most likely combination.
 
     Parameters
     ----------
-    frequencies : list
+    base : List[float]
         A list of frequencies which create base of linear combination.
     frequency : float
         A single frequency which must be checked.
@@ -109,25 +114,25 @@ def linear_combination(
         A lower bound of each coefficient.
     maximum : int
         An upper bound of each coefficient.
+    max_harmonic : int
+        A maximum value for a harmonic. It should be greater than the upper bound of each coefficient.
     epsilon : float
         If f0 - (C1*f1 + C2*f2 + ...) < epsilon, coefficients are accepted.
 
     Returns
     -------
     coefficients_array : ndarray
-        An array with coefficients.
+        An array with coefficients if some combination exists. Otherwise the array is filled by False.
 
     """
-    coeff_iter = coefficients_generator(len(frequencies), minimum, maximum)
-    frequencies = np.array(frequencies)
-    coefficients_array = np.zeros(len(frequencies), dtype=bool)
-    coeff_sum = np.inf
+    combination_list = list()
+    coefficients = coefficients_generator(len(base), minimum, maximum, max_harmonic)
 
-    for coefficients in coeff_iter:
-        if abs(frequency - np.dot(frequencies, coefficients)) < epsilon:
-            current_coeff_sum = np.power(coefficients, 2).sum()
-            if current_coeff_sum < coeff_sum:
-                coeff_sum = current_coeff_sum
-                coefficients_array = coefficients
+    for coeff in coefficients:
+        if abs(frequency - np.dot(base, coeff)) < epsilon:
+            combination_list.append(coeff)
 
-    return coefficients_array
+    if len(combination_list) != 0:
+        return get_most_likely_combination(combination_list)
+    else:
+        return np.zeros(len(base), dtype=bool)
