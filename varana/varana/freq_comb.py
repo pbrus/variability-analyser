@@ -63,7 +63,7 @@ def get_most_likely_combination(coefficients_set: List[np.ndarray]) -> np.ndarra
     Filter a list of coefficients taking into account the most likely combination. Coefficients are chosen by
     the following rules:
 
-        1. Leave lists of coefficients with the smallest number of elements.
+        1. Leave lists of coefficients with the smallest number of non-zero elements.
         2. Filter lists leaving those with the smallest value of the sum of square coefficients, i.e. C1^2 + C2^2 + ...
         3. If still there is more than one list, choose the one that has the smallest number of negative coefficients.
 
@@ -78,7 +78,13 @@ def get_most_likely_combination(coefficients_set: List[np.ndarray]) -> np.ndarra
         The most likely combination from the input set.
 
     """
-    coeffs = [i for i in filter(lambda x: len(x) == len(sorted(coefficients_set, key=len)[0]), coefficients_set)]
+    coeffs = [
+        i
+        for i in filter(
+            lambda x: np.count_nonzero(x) == np.count_nonzero(sorted(coefficients_set, key=np.count_nonzero)[0]),
+            coefficients_set,
+        )
+    ]
     coeffs = [
         i for i in filter(lambda x: sum(x ** 2) == sum(sorted(coeffs, key=lambda x: sum(x ** 2))[0] ** 2), coeffs)
     ]

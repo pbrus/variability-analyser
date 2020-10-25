@@ -41,18 +41,18 @@ def test_coefficients_generator(size, min, max, harm_max, n, result):
 @pytest.mark.parametrize(
     "coefficients_set, result",
     [
-        ([np.array([4, 1, -2]), np.array([3, -5, 2]), np.array([1, -2, 9])], np.array([4, 1, -2])),
-        ([np.array([2, 1]), np.array([-2, 1]), np.array([-1, 2]), np.array([-1, -2])], np.array([2, 1])),
+        ([np.array([4, 0, 1, -2]), np.array([0, 3, -5, 2]), np.array([1, -2, 9, -4])], np.array([4, 0, 1, -2])),
+        ([np.array([-2, 1]), np.array([2, 1]), np.array([-1, 2]), np.array([-1, -2])], np.array([2, 1])),
         (
             [
                 np.array([3, 4, 5]),
                 np.array([3, -4, 9]),
-                np.array([2, 8]),
-                np.array([1, 1]),
-                np.array([3]),
-                np.array([9]),
+                np.array([0, 2, 8]),
+                np.array([1, 0, 1]),
+                np.array([0, 3, 0]),
+                np.array([9, 0, 0]),
             ],
-            np.array([3]),
+            np.array([0, 3, 0]),
         ),
         ([np.array([2, 1])], np.array([2, 1])),
     ],
