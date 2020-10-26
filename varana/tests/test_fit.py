@@ -6,6 +6,7 @@ import unittest
 from os.path import realpath, split
 
 import numpy as np
+import pytest
 
 from varana.fit import (
     add_frequencies,
@@ -25,6 +26,21 @@ from varana.fit import (
     split_frequencies,
     substract_model,
 )
+
+
+@pytest.mark.parametrize(
+    "frequencies, min_coeff, max_coeff, max_harm, epsilon, result",
+    [
+        ([0.7548, 3.7741, 1.2916, 2.8011, 6.0384], -2, 5, 10, 1.1e-4, ([0.7548, 1.2916], [2.8011, 3.7741, 6.0384])),
+        ([6.0384, 3.7741, 1.2916, 2.8011, 0.7548], -2, 5, 10, 1.1e-6, ([0.7548, 1.2916, 2.8011, 3.7741], [6.0384])),
+        ([0.7548, 6.0384, 3.7741, 2.8011, 1.2916], 0, 5, 6, 1.1e-4, ([0.7548, 1.2916, 6.0384], [2.8011, 3.7741])),
+        ([0.8741, 5.6310, 0.5631], -5, 5, 10, 1e-4, ([0.5631, 0.8741], [5.6310])),
+        ([5.6310, 0.5631, 0.8741], -5, 5, 5, 1e-4, ([0.5631, 0.8741, 5.6310], [])),
+        ([1.1111, 0.8741, 0.5631], -2, 2, 2, 1.1e-4, ([0.5631, 0.8741, 1.1111], [])),
+    ],
+)
+def test_split_frequencies(frequencies, min_coeff, max_coeff, max_harm, epsilon, result):
+    assert split_frequencies(frequencies, min_coeff, max_coeff, max_harm, epsilon) == result
 
 
 class FitTest(unittest.TestCase):
@@ -108,20 +124,6 @@ class FitTest(unittest.TestCase):
 
         for x, y in zip(range(6), results):
             self.assertAlmostEqual(func(x, *parameters), y)
-
-    def test_split_frequencies(self):
-        frequencies = [1.2451, 2.3342, 3.2145, 4.4512, 4.5694]
-        epsilons = [1e-4, 1e-3, 1e-2]
-        results = [[], [], [4.4512]]
-
-        for res, eps in zip(results, epsilons):
-            self.assertEqual(split_frequencies(frequencies, eps)[-1], res)
-
-    def test_frequencies_combination(self):
-        frequencies = [1.2451, 2.3342, 3.2145, 4.4512, 4.5694]
-        comb_array = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [1, 0, 1, 0]])
-        comb = frequencies_combination(frequencies, 1e-2)[-1]
-        self.assertTrue((comb == comb_array).all())
 
     def test_initial_sines_sum_parameters(self):
         parameters = approximate_parameters(self.lightcurve, self.frequencies)

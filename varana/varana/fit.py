@@ -227,14 +227,22 @@ def final_sines_sum(linear_comb: ndarray) -> Callable:
     return _sines_sum
 
 
-def split_frequencies(frequencies: List[float], epsilon: float) -> Tuple[List[float], List[float]]:
+def split_frequencies(
+    frequencies: List[float], minimum: int, maximum: int, max_harmonic: int, epsilon: float
+) -> Tuple[List[float], List[float]]:
     """
-    Split frequencies into two lists.
+    Split frequencies into two lists using linear combination of coefficients C1, C2, C3, ...: (C1*f1 + C2*f2 + ...)
 
     Parameters
     ----------
     frequencies : List[float]
         A list with frequencies.
+    minimum : int
+        A lower bound of each coefficient.
+    maximum : int
+        An upper bound of each coefficient.
+    max_harmonic : int
+        A maximum value for a harmonic. It should be greater than the upper bound of each coefficient.
     epsilon : float
         If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
         in this comparison.
@@ -245,16 +253,16 @@ def split_frequencies(frequencies: List[float], epsilon: float) -> Tuple[List[fl
         A tuple made of two list. The first one contains basic frequencies, the second one their combinations.
 
     """
-    basic_freqs = frequencies[:1]
-    n_freqs = len(frequencies)
+    frequencies = sorted(frequencies)
+    basic_frequencies = frequencies[:1]
 
-    for i in range(n_freqs - 1):
-        if not np.any(linear_combination(basic_freqs, frequencies[i + 1], epsilon=epsilon)):
-            basic_freqs.append(frequencies[i + 1])
+    for i in range(len(frequencies) - 1):
+        if not np.any(
+            linear_combination(basic_frequencies, frequencies[i + 1], minimum, maximum, max_harmonic, epsilon)
+        ):
+            basic_frequencies.append(frequencies[i + 1])
 
-    comb_freqs = [freq for freq in frequencies if freq not in basic_freqs]
-
-    return basic_freqs, comb_freqs
+    return basic_frequencies, [freq for freq in frequencies if freq not in basic_frequencies]
 
 
 def frequencies_combination(frequencies: List[float], epsilon: float) -> Tuple[List[float], ndarray]:
@@ -313,7 +321,7 @@ def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: 
     return parameters
 
 
-def fit_final_curve(lightcurve: ndarray, frequencies: List[float], epsilon: float = 1e-3) -> ndarray:
+def fit_final_curve(lightcurve: ndarray, frequencies: List[float], epsilon: float = 1e-5) -> ndarray:
     """
     Fit a final curve to the light curve using a non-linear least squares method. The curve is composed of a sum
     of sines. The frequency parameters are limited only to basic frequencies. Some sines can be harmonics or have
