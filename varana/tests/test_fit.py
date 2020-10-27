@@ -213,7 +213,7 @@ class FitTest(unittest.TestCase):
                 4.20315650e-01,
             ]
         )
-        fitting = fit_final_curve(self.lightcurve, self.frequencies)
+        fitting = fit_final_curve(self.lightcurve, self.frequencies, -1, 1, 2)
         self.assertTrue(np.allclose(fitting, results))
 
     def test_final_parameters(self):

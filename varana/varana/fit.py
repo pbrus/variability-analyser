@@ -329,11 +329,18 @@ def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: 
     return parameters
 
 
-def fit_final_curve(lightcurve: ndarray, frequencies: List[float], epsilon: float = 1e-5) -> ndarray:
+def fit_final_curve(
+    lightcurve: ndarray,
+    frequencies: List[float],
+    minimum: int = -5,
+    maximum: int = 5,
+    max_harmonic: int = 10,
+    epsilon: float = 1e-5,
+) -> ndarray:
     """
     Fit a final curve to the light curve using a non-linear least squares method. The curve is composed of a sum
     of sines. The frequency parameters are limited only to basic frequencies. Some sines can be harmonics or have
-    frequencies equal to linear combinations of the basic frequencies.
+    frequencies equal to linear combinations of the basic frequencies, i.e. fn = C1*f1 + C2*f2 + ...
 
     Parameters
     ----------
@@ -341,6 +348,12 @@ def fit_final_curve(lightcurve: ndarray, frequencies: List[float], epsilon: floa
        An array composed of three columns: time, magnitude, errors.
     frequencies : List[float]
         A list with all frequencies delivered by input.
+    minimum : int
+        A lower bound of each coefficient.
+    maximum : int
+        An upper bound of each coefficient.
+    max_harmonic : int
+        A maximum value for a harmonic. It should be greater than the upper bound of each coefficient.
     epsilon : float
         If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
         in this comparison.
@@ -351,13 +364,15 @@ def fit_final_curve(lightcurve: ndarray, frequencies: List[float], epsilon: floa
         An array with parameters which describe a fitted function.
 
     """
-    basic_freqs, freqs_comb = frequencies_combination(frequencies, epsilon)
-    approx_param = approximate_parameters(lightcurve, np.dot(basic_freqs, freqs_comb.T).tolist())
-    func = final_sines_sum(freqs_comb)
+    base_frequencies, combined_frequencies = frequencies_combination(
+        frequencies, minimum, maximum, max_harmonic, epsilon
+    )
+    approx_param = approximate_parameters(lightcurve, np.dot(base_frequencies, combined_frequencies.T).tolist())
+    func = final_sines_sum(combined_frequencies)
     time, mag, err = lightcurve[:, 0], lightcurve[:, 1], lightcurve[:, 2]
-    x0 = initial_sines_sum_parameters(approx_param, basic_freqs)
+    x0 = initial_sines_sum_parameters(approx_param, base_frequencies)
     parameters, _ = curve_fit(func, time, mag, sigma=err, p0=x0)
-    parameters = final_parameters(parameters, freqs_comb)
+    parameters = final_parameters(parameters, combined_frequencies)
 
     return parameters
 
