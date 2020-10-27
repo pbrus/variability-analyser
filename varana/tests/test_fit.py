@@ -43,6 +43,61 @@ def test_split_frequencies(frequencies, min_coeff, max_coeff, max_harm, epsilon,
     assert split_frequencies(frequencies, min_coeff, max_coeff, max_harm, epsilon) == result
 
 
+@pytest.mark.parametrize(
+    "frequencies, min_coeff, max_coeff, max_harm, epsilon, result",
+    [
+        (
+            [0.7548, 3.7741, 1.2916, 2.8011, 6.0384],
+            -2,
+            5,
+            10,
+            1.1e-4,
+            ([0.7548, 1.2916], np.array([[1, 0], [0, 1], [2, 1], [5, 0], [8, 0]])),
+        ),
+        (
+            [6.0384, 3.7741, 1.2916, 2.8011, 0.7548],
+            -2,
+            5,
+            10,
+            1.1e-6,
+            (
+                [0.7548, 1.2916, 2.8011, 3.7741],
+                np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1], [8, 0, 0, 0]]),
+            ),
+        ),
+        (
+            [0.7548, 6.0384, 3.7741, 2.8011, 1.2916],
+            0,
+            5,
+            6,
+            1.1e-4,
+            ([0.7548, 1.2916, 6.0384], np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1], [2, 1, 0], [5, 0, 0]])),
+        ),
+        ([0.8741, 5.6310, 0.5631], -5, 5, 10, 1e-4, ([0.5631, 0.8741], np.array([[1, 0], [0, 1], [10, 0]]))),
+        (
+            [5.6310, 0.5631, 0.8741],
+            -5,
+            5,
+            5,
+            1e-4,
+            ([0.5631, 0.8741, 5.6310], np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])),
+        ),
+        (
+            [1.1111, 0.8741, 0.5631],
+            -2,
+            2,
+            2,
+            1.1e-4,
+            ([0.5631, 0.8741, 1.1111], np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])),
+        ),
+    ],
+)
+def test_frequencies_combination(frequencies, min_coeff, max_coeff, max_harm, epsilon, result):
+    base, combination = frequencies_combination(frequencies, min_coeff, max_coeff, max_harm, epsilon)
+    assert base == result[0]
+    assert (combination == result[1]).all()
+
+
 class FitTest(unittest.TestCase):
     def setUp(self):
         path = split(realpath(__file__))[0]

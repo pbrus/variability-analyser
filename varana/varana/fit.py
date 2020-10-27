@@ -265,15 +265,23 @@ def split_frequencies(
     return basic_frequencies, [freq for freq in frequencies if freq not in basic_frequencies]
 
 
-def frequencies_combination(frequencies: List[float], epsilon: float) -> Tuple[List[float], ndarray]:
+def frequencies_combination(
+    frequencies: List[float], minimum: int, maximum: int, max_harmonic: int, epsilon: float
+) -> Tuple[List[float], ndarray]:
     """
     Select from all frequencies only those which are independent and generate an array with coefficients of linear
-    combinations of basic frequencies.
+    combinations of basic frequencies, i.e. C1, C2, C3, ...: (C1*f1 + C2*f2 + ...)
 
     Parameters
     ----------
     frequencies : List[float]
         A list with frequencies.
+    minimum : int
+        A lower bound of each coefficient.
+    maximum : int
+        An upper bound of each coefficient.
+    max_harmonic : int
+        A maximum value for a harmonic. It should be greater than the upper bound of each coefficient.
     epsilon : float
         If a single frequency is compared to the linear combination of another frequencies, the epsilon means tolerance
         in this comparison.
@@ -281,19 +289,19 @@ def frequencies_combination(frequencies: List[float], epsilon: float) -> Tuple[L
     Returns
     -------
     tuple
-        A tuple made of a list and an ndarray. The first one contains basic frequencies, the second one the array with
+        A tuple made of a list and an ndarray. The first one contains basic frequencies, the second one is an array with
         coefficients of linear combinations of basic frequencies.
 
     """
-    basic_freqs, harmonic_freqs = split_frequencies(frequencies, epsilon)
-    freqs_array = np.diag(np.ones(len(basic_freqs), dtype=int))
+    base_frequencies, combined_frequencies = split_frequencies(frequencies, minimum, maximum, max_harmonic, epsilon)
+    array = np.eye(len(base_frequencies), dtype=int)
 
-    for harm in harmonic_freqs:
-        linear_comb = linear_combination(basic_freqs, harm, epsilon=epsilon)
-        linear_comb = linear_comb.reshape(-1, len(basic_freqs))
-        freqs_array = np.append(freqs_array, linear_comb, axis=0)
+    for combined_frequency in combined_frequencies:
+        linear_comb = linear_combination(base_frequencies, combined_frequency, minimum, maximum, max_harmonic, epsilon)
+        linear_comb = linear_comb.reshape(-1, len(base_frequencies))
+        array = np.append(array, linear_comb, axis=0)
 
-    return basic_freqs, freqs_array
+    return base_frequencies, array
 
 
 def initial_sines_sum_parameters(approximate_param: ndarray, basic_frequencies: List[float]) -> ndarray:
