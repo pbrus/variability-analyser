@@ -57,6 +57,48 @@ arg_parser.add_argument(
 )
 
 arg_parser.add_argument(
+    "--min",
+    help=dedent(
+        """\
+    A minimum value (int) of all coefficients.
+    (default = -5)
+
+    """
+    ),
+    metavar="min",
+    type=int,
+    default=-5,
+)
+
+arg_parser.add_argument(
+    "--max",
+    help=dedent(
+        """\
+    A maximum value (int) of all coefficients.
+    (default = 5)
+
+    """
+    ),
+    metavar="max",
+    type=int,
+    default=5,
+)
+
+arg_parser.add_argument(
+    "--max_harm",
+    help=dedent(
+        """\
+    A maximum value (int) of harmonic frequencies.
+    (default = 10)
+
+    """
+    ),
+    metavar="harm",
+    type=int,
+    default=10,
+)
+
+arg_parser.add_argument(
     "--eps",
     help=dedent(
         """\
@@ -80,7 +122,7 @@ except OSError as error:
     exit()
 
 frequencies = sorted(args.freq)
-parameters = fit_final_curve(lightcurve, frequencies, args.eps)
+parameters = fit_final_curve(lightcurve, frequencies, args.min, args.max, args.max_harm, args.eps)
 print_parameters(parameters)
 
 if args.resid is not None:

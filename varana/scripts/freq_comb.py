@@ -75,6 +75,20 @@ arg_parser.add_argument(
 )
 
 arg_parser.add_argument(
+    "--max_harm",
+    help=dedent(
+        """\
+    A maximum value (int) of harmonic frequencies.
+    (default = 10)
+
+    """
+    ),
+    metavar="harm",
+    type=int,
+    default=10,
+)
+
+arg_parser.add_argument(
     "--eps",
     help=dedent(
         """\
@@ -90,7 +104,7 @@ arg_parser.add_argument(
 )
 
 args = arg_parser.parse_args()
-combination = linear_combination(args.base, args.freq, minimum=args.min, maximum=args.max, epsilon=args.eps)
+combination = linear_combination(args.base, args.freq, args.min, args.max, args.max_harm, args.eps)
 
 if combination.any():
     print(*combination)
