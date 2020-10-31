@@ -98,8 +98,13 @@ function edit_frequencies_table()
                    ${lightcurve_filename}`
 
     ${EDITOR} frequencies_table
-    fit.py ${lightcurve_filename} --freq `cat frequencies_table` \
-    --resid ${RESID_FILE} --eps ${epsilon} > ${MODEL_FILE}
+    fit.py ${lightcurve_filename} \
+        --freq `cat frequencies_table` \
+        --resid ${RESID_FILE} \
+        --min ${FREQ_LINCOMB_MIN_COEFF} \
+        --max ${FREQ_LINCOMB_MAX_COEFF} \
+        --max_harm ${FREQ_LINCOMB_MAX_HARM} \
+        --eps ${epsilon} > ${MODEL_FILE}
 
     display_current_model
 }
