@@ -79,10 +79,7 @@ function calculate_fourier_transform()
 
 function fourier_transform()
 {
-    local step=`awk '{if (NR==1) t0=$1} END {
-                printf("%f\n", '${FT_STEP_FACTOR}'/($1-t0))}' $1`
-
-    fnpeaks -f $1 ${FT_START} ${FT_STOP} ${step} > /dev/null
+    fnpeaks -f $1 ${FT_START} ${FT_STOP} ${FT_STEP} > /dev/null
 
     local fourier_transform_file=`basename -s ${LC_SUFFIX} $1`".trf"
     local fourier_transform_max_file=`basename -s ${LC_SUFFIX} $1`".max"
@@ -152,7 +149,7 @@ function change_fourier_parameters()
 {
     set_fourier_parameter "FT_START"
     set_fourier_parameter "FT_STOP"
-    set_fourier_parameter "FT_STEP_FACTOR"
+    set_fourier_parameter "FT_STEP"
 }
 
 function set_fourier_parameter()
