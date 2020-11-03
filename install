@@ -59,22 +59,10 @@ then
 fi
 
 
+printf "Installing ${GREEN}varana${RESET} module\n"
 cd varana
-python3 setup.py install
+sudo python3 setup.py install
 cd ..
-
-
-if [ $? -ne 0 ]
-then
-    if [ `id -u` -ne 0 ]
-    then
-        printf "${RED}ERROR: Run this script as root or with sudo${RESET}\n"
-        exit
-    else
-        printf "${RED}ERROR: Cannot install the varana module${RESET}\n"
-        exit
-    fi
-fi
 
 
 curl -O http://helas.astro.uni.wroc.pl/data/source/fnpeaks.tar.gz
@@ -90,10 +78,11 @@ printf "VARANA_PATH='${INSTALL_DIR}/${PROJECT_DIR}'\n" > .variability.rc
 printf "export VARANA_PATH\n" >> .variability.rc
 printf "PATH=${PATH}:${INSTALL_DIR}/${PROJECT_DIR}\n" >> .variability.rc
 
+
 cp -rp var_analyser.sh lib var.config ${INSTALL_DIR}/${PROJECT_DIR}/.
 mv fnpeaks .variability.rc ${INSTALL_DIR}/${PROJECT_DIR}/.
 
-tmp=${HOME}/.bashrc
+tmp=${HOME}/.bash_profile
 rc_file=${INSTALL_DIR}/${PROJECT_DIR}/.variability.rc
 printf "\nif [ -e ${rc_file} ]; then\n    source ${rc_file}\nfi\n" >> ${tmp}
 sleep 1
