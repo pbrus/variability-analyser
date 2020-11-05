@@ -91,8 +91,7 @@ function fourier_transform()
 function edit_frequencies_table()
 {
     local epsilon=`awk '{if (NR==1) t0=$1} END {
-                   printf("%f\n", '${FREQ_LINCOMB_FACTOR}'/($1-t0))}' \
-                   ${lightcurve_filename}`
+                   printf("%f\n", ($1-t0))}' ${lightcurve_filename}`
 
     ${EDITOR} frequencies_table
     fit.py ${lightcurve_filename} \
