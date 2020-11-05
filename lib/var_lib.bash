@@ -94,6 +94,8 @@ function edit_frequencies_table()
                    printf("%f\n", ($1-t0))}' ${lightcurve_filename}`
 
     ${EDITOR} frequencies_table
+    is_model_converge frequencies_table epsilon
+
     fit.py ${lightcurve_filename} \
         --freq `cat frequencies_table` \
         --resid ${RESID_FILE} \
@@ -103,6 +105,19 @@ function edit_frequencies_table()
         --eps ${epsilon} > ${MODEL_FILE}
 
     display_current_model
+}
+
+function is_model_converge()
+{
+    local frequencies_table=$1
+    local epsilon=$2
+
+    local new_frequency=`awk 'END {print $1}' ${frequencies_table}`
+    local num_of_lines=`awk 'END {print NR}' ${frequencies_table}`
+
+    awk 'function abs(x){return ((x < 0.0) ? -x : x)} NR < '${num_of_lines}' \
+        {is_converge = 1; if (abs($1 - '${new_frequency}') < '${epsilon}')
+        {is_converge = 0; exit}} END {print is_converge}' ${frequencies_table}
 }
 
 function display_current_model()
