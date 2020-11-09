@@ -91,20 +91,26 @@ function fourier_transform()
 function edit_frequencies_table()
 {
     local epsilon=`awk '{if (NR==1) t0=$1} END {
-                   printf("%f\n", ($1-t0))}' ${lightcurve_filename}`
+                   printf("%f\n", 1/($1-t0))}' ${lightcurve_filename}`
 
     ${EDITOR} frequencies_table
-    is_model_converge frequencies_table epsilon
+    local convergence=`is_model_converge frequencies_table ${epsilon}`
 
-    fit.py ${lightcurve_filename} \
-        --freq `cat frequencies_table` \
-        --resid ${RESID_FILE} \
-        --min ${FREQ_LINCOMB_MIN_COEFF} \
-        --max ${FREQ_LINCOMB_MAX_COEFF} \
-        --max_harm ${FREQ_LINCOMB_MAX_HARM} \
-        --eps ${epsilon} > ${MODEL_FILE}
+    if [ "${convergence}" -eq "1" ]
+    then
+        fit.py ${lightcurve_filename} \
+            --freq `cat frequencies_table` \
+            --resid ${RESID_FILE} \
+            --min ${FREQ_LINCOMB_MIN_COEFF} \
+            --max ${FREQ_LINCOMB_MAX_COEFF} \
+            --max_harm ${FREQ_LINCOMB_MAX_HARM} \
+            --eps ${epsilon} > ${MODEL_FILE}
 
-    display_current_model
+        display_current_model
+    else
+        report_divergence
+        exit 1
+    fi
 }
 
 function is_model_converge()
@@ -112,10 +118,11 @@ function is_model_converge()
     local frequencies_table=$1
     local epsilon=$2
 
-    local new_frequency=`awk 'END {print $1}' ${frequencies_table}`
+    local new_frequency=`awk 'END {print ($1!=""?$1:0)}' ${frequencies_table}`
     local num_of_lines=`awk 'END {print NR}' ${frequencies_table}`
 
-    awk 'function abs(x){return ((x < 0.0) ? -x : x)} NR < '${num_of_lines}' \
+    awk 'BEGIN {if ('${num_of_lines}' < 2) {is_converge = 1; exit}} \
+        function abs(x){return (x<0?-x:x)} NR < '${num_of_lines}' \
         {is_converge = 1; if (abs($1 - '${new_frequency}') < '${epsilon}')
         {is_converge = 0; exit}} END {print is_converge}' ${frequencies_table}
 }
@@ -231,6 +238,13 @@ function log_constant_object()
 {
     local comment="${lightcurve_filename}: constant"
     echo -e ${comment} >> ${RESULTS_DIR}/${RESULTS_LOG}
+}
+
+function report_divergence()
+{
+    cp frequencies_table ${RESULTS_DIR}/${lightcurve_filename/${LC_SUFFIX}/.freq}
+    restart_analysis
+    remove_files_or_dirs ${lightcurve_filename}
 }
 
 function restart_analysis()
