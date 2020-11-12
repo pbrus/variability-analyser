@@ -22,10 +22,11 @@ function save_detrend_data()
 
 function detrend_data()
 {
-    local nodes_number=9
+    local nodes_number=$2
+    local question="Is OK [Y/n]:"
     local answer="n"
 
-    echo "Is OK? [y/n]:"
+    echo ${question}
     display_detrend_data $1 ${nodes_number}
     read answer
 
@@ -33,12 +34,13 @@ function detrend_data()
     do
         echo "Number of nodes (last ${nodes_number}):"
         read nodes_number
-        echo "Is OK? [y/n]:"
+        echo ${question}
         display_detrend_data $1 ${nodes_number}
         read answer
     done
 
     save_detrend_data $1 ${nodes_number}
+    LC_NODES_NUMBER=${nodes_number}
 }
 
 function detrend()
@@ -46,7 +48,7 @@ function detrend()
     if [ ! -e ${1/${LC_DIR}/${LC_DETREND_DIR}} ]
     then
         rearrange_columns_lightcurve $1
-        detrend_data $1.tmp
+        detrend_data $1.tmp ${LC_NODES_NUMBER}
         remove_files_or_dirs $1.tmp
     fi
 }

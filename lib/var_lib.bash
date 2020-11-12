@@ -157,7 +157,7 @@ function phase_lightcurve()
 
 function detrend_residuals()
 {
-    detrend_data ${RESID_FILE}
+    detrend_data ${RESID_FILE} ${LC_NODES_NUMBER}
     remove_files_or_dirs ${RESID_FILE/${LC_SUFFIX}/.png}
 }
 
