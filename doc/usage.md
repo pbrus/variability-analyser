@@ -8,13 +8,13 @@ Let's prepare the data firstly. We call the main script to remove a trend:
 ```bash
 var_analyser.sh lightcurves/rr_lyr_lc.dat
 ```
-We get an image of the time series and a spline with 9 (default) nodes marked by red dots:
+We get an image of the time series and a spline with 10 nodes (9 on image) marked by red dots:
 
 <img src="resources/rr_lyr_detrend-1.png" width="800" alt="rr_lyr_detrend-1.png">
 
 A spline describes the trend between observational seasons. The script asks us:
 ```
-Is OK? [y/n]:
+Is OK? [Y/n]:
 ```
 We can change the number of nodes. If we type `n` then `11`, we get the following fitting:
 
@@ -113,7 +113,7 @@ y_intercept
 > ```
 > <img src="resources/rr_lyr_periodogram-2.png" width="800" alt="rr_lyr_periodogram-2.png">
 >
-> This long-period variability can be ousted using `d` option. Indeed, removing of trend eliminates this small frequency:
+> This long-period variability can be ousted using `d` option. Indeed, removing a trend eliminates this small frequency:
 > ```
 >    0     3.384602     0.295456    0.00215     3.80
 >    1     2.771522     0.360813    0.00207     3.67
@@ -131,3 +131,18 @@ At the end we save results selecting `s` option. If a star is variable we answer
 > RR Lyrae star
 
 All results including a log file with comments for many time series will be stored in a directory pointed by `RESULTS_DIR`.
+
+## Frequencies
+
+There are a few steps before a new frequency will be added to the final model:
+
+1. Each new frequency is always compared to the already found frequencies. First of all it is checking whether it is enough far from the rest values. Let's assume that `f` is a new frequency, `fi` represents a single frequency from the current table frequencies and `T` is a time difference between the first measurement and the last one. If `(f - fi) < 1/T` then the model will not converge and the whole analysis interrupts automatically. The table frequencies with the new frequency will be moved to the result directory getting a _.freq_ suffix.
+
+2. If the new frequency is far enough from the rest, it is compared to linear combinations of the rest `n` frequencies. The combinations are generated according to the pattern in [[ Frequencies combination ]](configuration.md#-frequencies-combination-) section. All combinations which meet the condition `f - (c1*f1 + c2*f2 + ... + cn*fn) < 1/T` are saved and lists of coefficients for each combination are filtered in the following way:
+    * Leave lists of coefficients with the smallest number of non-zero elements,
+    * Filter lists leaving those with the smallest value of the sum of square coefficients, i.e. `c1*c1 + c2*c2 + ... + cn*cn`,
+    * If still there is more than one list, choose the one that has the smallest number of negative coefficients.
+
+   This allows to decrease the number of parameters when a model is fitted to the data.
+
+3. If the new frequency is far enough from the rest and it doesn't depend on the rest frequencies it is just added to a model.
