@@ -14,13 +14,12 @@ This package provides tools to:
 
 """
 
-__all__ = ["detrend", "trim", "freq_comb", "fit", "phase", "plt_pdgrm"]
-__version__ = "0.1.2"
+__all__ = ["detrend", "fit", "freq_comb", "phase", "plt_pdgrm", "trim"]
+__version__ = "1.0.0"
 
-
-from . import detrend
-from . import trim
-from . import freq_comb
-from . import fit
-from . import phase
-from . import plt_pdgrm
+from varana import detrend
+from varana import fit
+from varana import freq_comb
+from varana import phase
+from varana import plt_pdgrm
+from varana import trim
