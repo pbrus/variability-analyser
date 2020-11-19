@@ -15,7 +15,7 @@ function print_welcome()
     echo -e "   --config /path/to/config_file"
     echo -e ""
     echo -e ""
-    echo -e " Version: 0.1.0"
+    echo -e " Version: 1.0.0"
     echo -e " https://github.com/pbrus"
     echo -e ""
 }
