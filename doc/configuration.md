@@ -35,11 +35,11 @@ In this section you can set parameters of Fourier Transform (FT).
 
 #### [ Frequencies combination ]
 
-| variable name          | meaning                                                                 |
-| ---------------------- | ----------------------------------------------------------------------- |
-| FREQ_LINCOMB_MIN_COEFF | Minimal value of all coefficients in linear combinations of frequencies |
-| FREQ_LINCOMB_MAX_COEFF | Maximal value of all coefficients in linear combinations of frequencies |
-| FREQ_LINCOMB_MAX_HARM  | Maximal value of harmonics in linear combinations of frequencies        |
+| variable name          | meaning                                                                  |
+| ---------------------- | ------------------------------------------------------------------------ |
+| FREQ_LINCOMB_MIN_COEFF | Minimal value for each coefficient of linear combinations of frequencies |
+| FREQ_LINCOMB_MAX_COEFF | Maximal value for each coefficient of linear combinations of frequencies |
+| FREQ_LINCOMB_MAX_HARM  | Maximal value for each harmonic of linear combinations of frequencies    |
 
 Let's assume that we want to calculate linear combination of three frequencies `f1`, `f2`, `f3` and:
 
