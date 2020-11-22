@@ -27,6 +27,9 @@
   * Store a reference to **variability-analyser** in `.bash_profile` instead `.bashrc`
 * Documentation
 
+### Fixed
+* Restart (not overwrite) the residuals file each time when the number of nodes is updated interactively
+
 ### Removed
 * Parameters from `var.config`:
   * `FT_STEP_FACTOR`
