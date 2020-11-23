@@ -12,7 +12,12 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/pbrus/variability-analyser/tree/master/varana",
     packages=setuptools.find_packages(exclude=["tests"]),
-    install_requires=["numpy", "scipy", "matplotlib", "scikit-learn"],
+    install_requires=[
+        "matplotlib==3.3.3",
+        "numpy==1.19.4",
+        "scikit-learn==0.23.2",
+        "scipy==1.5.4",
+    ],
     scripts=[
         "scripts/detrend.py",
         "varana/trim.py",
@@ -23,6 +28,7 @@ setuptools.setup(
     ],
     tests_require=["pytest"],
     keywords=["variability", "time", "series", "stars", "magnitude"],
+    python_requires=">=3.6",
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",

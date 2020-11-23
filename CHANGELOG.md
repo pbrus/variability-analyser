@@ -14,7 +14,7 @@
 ### Changed
 * **[Algorithm] to compute a linear combination of frequencies** :exclamation:
 * Update `varana` package to version `1.0.0`:
-  * **Break compatibility with 3.5** :exclamation:
+  * **Break compatibility with Python 3.5** :exclamation:
   * Migrate to Python >= 3.6
   * Update the algorithm to compute a linear combination of frequencies by `freq_comb.py`
   * Add `max_harm` parameter to `freq_comb.py` and `fit.py` scripts
