@@ -34,6 +34,10 @@ To uninstall the software entirely remove the `installation directory`.
 
 To get more info please check the [doc](doc) directory.
 
+## Contribution
+
+New feature, bugs? Issues and pull requests are welcome.
+
 ## License
 
 **Variability-analyser** is licensed under the [MIT license](http://opensource.org/licenses/MIT). Note that [*FNPEAKS*](http://helas.astro.uni.wroc.pl/deliverables.php?active=fnpeaks&lang=en) is a third-party software component.
