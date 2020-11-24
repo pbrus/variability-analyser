@@ -8,7 +8,7 @@ Let's prepare the data firstly. We call the main script to remove a trend:
 ```bash
 var_analyser.sh lightcurves/rr_lyr_lc.dat
 ```
-We get an image of the time series and a spline with 10 nodes (9 on image) marked by red dots:
+We get an image of the time series and a spline with 10 (default) nodes marked by red dots:
 
 <img src="resources/rr_lyr_detrend-1.png" width="800" alt="rr_lyr_detrend-1.png">
 
