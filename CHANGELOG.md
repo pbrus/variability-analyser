@@ -1,5 +1,5 @@
 # Variability Analyser Changelog
-## [1.0.0]
+## [1.0.0] 2020-11-25
 ### Added
 * Mechanism checking whether a new found frequency can cause that the model does not converge
 * Parameters to `var.config`:
