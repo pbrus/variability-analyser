@@ -6,6 +6,7 @@ import unittest
 from os.path import realpath, split
 
 import numpy as np
+import pytest
 
 from varana.detrend import (
     calculate_kmeans,
@@ -22,6 +23,15 @@ from varana.detrend import (
     x_domain_spline,
     y_domain_spline,
 )
+from varana.detrend import set_interval
+
+
+@pytest.mark.parametrize(
+    "start, stop, node_numbers, result",
+    [(242.91, 1039.82, 10, 79.8), (1.23, 10.61, 20, 0.5), (981.35, 1121.20, 10, 14.1)],
+)
+def test_set_interval(start, stop, node_numbers, result):
+    assert pytest.approx(set_interval(start, stop, node_numbers)) == result
 
 
 class DetrendTest(unittest.TestCase):

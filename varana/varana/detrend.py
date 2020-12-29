@@ -6,10 +6,32 @@ from os.path import basename, splitext, dirname, join
 from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
-from numpy import genfromtxt, arange, std, delete, where, stack
+from numpy import genfromtxt, arange, std, delete, where, stack, ceil, floor
 from numpy import ndarray
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 from sklearn.cluster import KMeans
+
+
+def set_interval(start: float, stop: float, nodes_number: int) -> float:
+    """
+    Determine an interval of a time series for a given number of nodes.
+
+    Parameters
+    ----------
+    start : float
+        The beginning of the time series.
+    stop : float
+        The end of the time series.
+    nodes_number : int
+        The number of nodes which divide the time series into chunks.
+
+    Returns
+    -------
+    float
+        A length of a time interval.
+
+    """
+    return (ceil(stop) - floor(start)) / nodes_number
 
 
 def valid_seasons_amount(seasons_amount: int) -> int:
