@@ -4,12 +4,65 @@ Detrend a light curve removing seasonal deviations.
 """
 from os.path import basename, splitext, dirname, join
 from typing import Callable, Tuple
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 from numpy import genfromtxt, arange, std, delete, where, stack, ceil, floor
 from numpy import ndarray
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 from sklearn.cluster import KMeans
+
+
+def load_data(filename: str) -> Tuple[ndarray, ndarray, ndarray]:
+    """
+    Load the data from a text file to separate arrays.
+
+    Parameters
+    ----------
+    filename : str
+        A name of a file with data. The file should contain three n-element columns:
+         - time
+         - brightness
+         - error of brightness
+
+        All data should be represented by floats.
+
+    Returns
+    -------
+    tuple
+        A tuple made of three (n, 1)-shaped ndarrays.
+
+    """
+    data = genfromtxt(Path(filename))
+    return data[:, 0], data[:, 1], data[:, 2]
+
+
+def validate_nodes_number(nodes_number: int) -> int:
+    """
+    Check whether a number of nodes is sufficient to detrend the data.
+
+    Parameters
+    ----------
+    nodes_number : int
+        The number of nodes.
+
+    Returns
+    -------
+    int
+        The number of nodes.
+
+    Raises
+    ------
+    ValueError
+        Raise when the number of nodes is not sufficient.
+
+    """
+    min_nodes_number = 2
+
+    if nodes_number < min_nodes_number:
+        raise ValueError(f"At least {min_nodes_number} nodes are required to detrend data")
+    else:
+        return nodes_number
 
 
 def set_interval(start: float, stop: float, nodes_number: int) -> float:
@@ -32,45 +85,6 @@ def set_interval(start: float, stop: float, nodes_number: int) -> float:
 
     """
     return (ceil(stop) - floor(start)) / nodes_number
-
-
-def valid_seasons_amount(seasons_amount: int) -> int:
-    """
-    Check whether the number of seasons is sufficient to detrend the data.
-
-    Parameters
-    ----------
-    seasons_amount : int
-        The number of seasons.
-
-    Returns
-    -------
-    seasons_amount : int
-        The number of seasons or raise the exception.
-
-    """
-    if seasons_amount < 2:
-        raise ValueError("At least 2 seasons in data are required!")
-    else:
-        return seasons_amount
-
-
-def get_data(filename: str) -> ndarray:
-    """
-    Alias for the numpy.genfromtxt function.
-
-    Parameters
-    ----------
-    filename : str
-        The name of a file with data.
-
-    Returns
-    -------
-    ndarray
-        The data from the input file stored in an ndarray object.
-
-    """
-    return genfromtxt(filename)
 
 
 def sigma_clipping_magnitude(data: ndarray) -> ndarray:
@@ -135,24 +149,6 @@ def warn_rejected_points(filename: str) -> None:
 
     """
     print("Rejected too many points from {0:s}".format(filename))
-
-
-def unpack_data(data: ndarray) -> Tuple[ndarray, ndarray, ndarray]:
-    """
-    Unpack data to the tuple.
-
-    Parameters
-    ----------
-    data : ndarray
-        An ndarray with (n, 3)-shape.
-
-    Returns
-    -------
-    tuple
-        A tuple made of three (n, 1)-shaped ndarrays.
-
-    """
-    return data[:, 0], data[:, 1], data[:, 2]
 
 
 def calculate_kmeans(time: ndarray, magnitude: ndarray, error_magnitude: ndarray, clusters_number: int = 2) -> KMeans:
