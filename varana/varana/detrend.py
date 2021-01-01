@@ -3,11 +3,12 @@ Detrend a light curve removing seasonal deviations.
 
 """
 from os.path import basename, splitext, dirname, join
-from typing import Callable, Tuple
 from pathlib import Path
+from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
-from numpy import genfromtxt, arange, std, delete, where, stack, ceil, floor
+from astropy.stats import sigma_clip
+from numpy import genfromtxt, arange, stack, ceil, floor
 from numpy import ndarray
 from scipy.interpolate import InterpolatedUnivariateSpline as Spline
 from sklearn.cluster import KMeans
@@ -87,32 +88,23 @@ def set_interval(start: float, stop: float, nodes_number: int) -> float:
     return (ceil(stop) - floor(start)) / nodes_number
 
 
-def sigma_clipping_magnitude(data: ndarray) -> ndarray:
+def sigma_clipping_magnitude(data: Tuple[ndarray, ndarray, ndarray]) -> Tuple[ndarray, ndarray, ndarray]:
     """
-    Filter the second column in the data array. Calculate a mean value (m), a standard deviation (s) and reject points
-    with values: m +/- 3s.
+    Filter the data using 3x sigma clipping of magnitudes.
 
     Parameters
     ----------
-    data : ndarray
-        An ndarray with (n, 3)-shape.
+    data : Tuple[ndarray, ndarray, ndarray]
+        A tuple consisting of three (n, 1)-shape arrays.
 
     Returns
     -------
-    updated_data : ndarray
-        The ndarray without clipped points in the second column.
+    Tuple[ndarray, ndarray, ndarray]
+        Updated data with removed outstanding points of magnitude.
 
     """
-    updated_data = delete(
-        data,
-        where(
-            (data[:, 1] < data[:, 1].mean() - 3 * std(data[:, 1]))
-            | (data[:, 1] > data[:, 1].mean() + 3 * std(data[:, 1]))
-        ),
-        axis=0,
-    )
-
-    return updated_data
+    mask = ~sigma_clip(data[1], sigma=3.0).mask
+    return data[0][mask], data[1][mask], data[2][mask]
 
 
 def too_much_points_rejected(all_points_number: int, current_points_number: int) -> bool:

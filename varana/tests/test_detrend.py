@@ -7,7 +7,7 @@ from os.path import realpath, split
 import numpy as np
 import pytest
 
-from varana.detrend import set_interval, validate_nodes_number, load_data
+from varana.detrend import set_interval, validate_nodes_number, load_data, sigma_clipping_magnitude
 
 test_data_dir_path = split(realpath(__file__))[0]
 synthetic_lc_path = test_data_dir_path + r"/test_data/synthetic_lc.dat"
@@ -43,3 +43,14 @@ def test_validate_nodes_number_exception(nodes_number):
 )
 def test_set_interval(start, stop, node_numbers, result):
     assert pytest.approx(set_interval(start, stop, node_numbers)) == result
+
+
+def test_sigma_clipping_magnitude():
+    data = load_data(synthetic_lc_path)
+    out_mag = np.array([-3.67704, 3.33428])
+    out_idx = np.where(np.in1d(data[1], out_mag) == True)
+
+    trim_data = sigma_clipping_magnitude(data)
+
+    for i in range(3):
+        np.testing.assert_allclose(np.delete(data[i], out_idx), trim_data[i])
