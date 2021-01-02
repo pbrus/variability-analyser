@@ -8,7 +8,6 @@ import numpy as np
 import pytest
 
 from varana.detrend import (
-    set_interval,
     validate_nodes_number,
     load_data,
     sigma_clipping_magnitude,
@@ -41,14 +40,6 @@ def test_validate_nodes_number(nodes_number):
 def test_validate_nodes_number_exception(nodes_number):
     with pytest.raises(ValueError, match="At least 2 nodes are required to detrend data"):
         validate_nodes_number(nodes_number)
-
-
-@pytest.mark.parametrize(
-    "start, stop, node_numbers, result",
-    [(242.91, 1039.82, 10, 79.8), (1.23, 10.61, 20, 0.5), (981.35, 1121.20, 10, 14.1)],
-)
-def test_set_interval(start, stop, node_numbers, result):
-    assert pytest.approx(set_interval(start, stop, node_numbers)) == result
 
 
 def test_sigma_clipping_magnitude():

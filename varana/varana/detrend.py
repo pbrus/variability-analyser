@@ -8,7 +8,7 @@ from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
 from astropy.stats import sigma_clip
-from numpy import genfromtxt, ceil, floor, ndarray
+from numpy import genfromtxt, ndarray
 
 
 def load_data(filename: str) -> Tuple[ndarray, ndarray, ndarray]:
@@ -61,28 +61,6 @@ def validate_nodes_number(nodes_number: int) -> int:
         raise ValueError(f"At least {min_nodes_number} nodes are required to detrend data")
     else:
         return nodes_number
-
-
-def set_interval(start: float, stop: float, nodes_number: int) -> float:
-    """
-    Determine an interval of a time series for a given number of nodes.
-
-    Parameters
-    ----------
-    start : float
-        The beginning of the time series.
-    stop : float
-        The end of the time series.
-    nodes_number : int
-        The number of nodes which divide the time series into chunks.
-
-    Returns
-    -------
-    float
-        A length of a time interval.
-
-    """
-    return (ceil(stop) - floor(start)) / nodes_number
 
 
 def sigma_clipping_magnitude(data: Tuple[ndarray, ndarray, ndarray]) -> Tuple[ndarray, ndarray, ndarray]:
