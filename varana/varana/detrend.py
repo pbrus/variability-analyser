@@ -8,10 +8,7 @@ from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
 from astropy.stats import sigma_clip
-from numpy import genfromtxt, arange, stack, ceil, floor
-from numpy import ndarray
-from scipy.interpolate import InterpolatedUnivariateSpline as Spline
-from sklearn.cluster import KMeans
+from numpy import genfromtxt, ceil, floor, ndarray
 
 
 def load_data(filename: str) -> Tuple[ndarray, ndarray, ndarray]:
@@ -128,133 +125,6 @@ def too_many_points_rejected(filename: str, all_points_number: int, current_poin
     """
     if (1 - current_points_number / all_points_number) > 0.05:
         raise ValueError(f"Rejected too many points from {filename}")
-
-
-def calculate_kmeans(time: ndarray, magnitude: ndarray, error_magnitude: ndarray, clusters_number: int = 2) -> KMeans:
-    """
-    Calculate a KMeans object.
-
-    Parameters
-    ----------
-    time : ndarray
-        An ndarray which stores float values of time.
-    magnitude : ndarray
-        An ndarray which stores float values of magnitude.
-    error_magnitude : ndarray
-        An ndarray which stores float values of magnitude's error.
-    clusters_number : int
-        The amount of the clusters in the data set (time, magnitude).
-        Default = 2.
-
-    Returns
-    -------
-    KMeans
-        The KMeans object.
-
-    """
-    kmeans = KMeans(n_clusters=clusters_number, random_state=0).fit(
-        stack((time, magnitude), axis=1), sample_weight=error_magnitude
-    )
-
-    return kmeans
-
-
-def sorted_centers(kmeans: KMeans) -> ndarray:
-    """
-    Sort centers by the first coordinate in the KMeans object.
-
-    Parameters
-    ----------
-    kmeans : KMeans
-        The KMeans object.
-
-    Returns
-    -------
-    ndarray
-        Sorted values in KMeans.cluster_centers_ by the first column.
-
-    """
-    return kmeans.cluster_centers_[kmeans.cluster_centers_[:, 0].argsort()]
-
-
-def spline_order(seasons_amount: int) -> int:
-    """
-    Calculate an order of the spline function. The order must be: 1 <= k <= 5 and depends on the input parameter.
-
-    Parameters
-    ----------
-    seasons_amount : int
-        The number of seasons in the data.
-
-    Returns
-    -------
-    int
-        The order of the spline function.
-
-    """
-    if seasons_amount < 4:
-        return seasons_amount - 1
-    else:
-        return 3
-
-
-def spline_function(points: ndarray, order: int = 3) -> Callable:
-    """
-    Determine a spline function for given points.
-
-    Parameters
-    ----------
-    points : ndarray
-        The (n, 2)-shaped ndarray with points positions.
-    order : int
-        The order of the final spline function.
-        Default = 3.
-
-    Returns
-    -------
-    function
-        The spline function fitted to the points.
-
-    """
-    return Spline(points[:, 0], points[:, 1], k=order)
-
-
-def x_domain_spline(time: ndarray) -> ndarray:
-    """
-    Define an x domain for time vector that its points are equal separated.
-
-    Parameters
-    ----------
-    time : ndarray
-        The (n, 1)-shaped ndarray.
-
-    Returns
-    -------
-    ndarray
-        The transformed time vector.
-
-    """
-    return arange(time.min(), time.max(), (time.max() - time.min()) / len(time))
-
-
-def y_domain_spline(spline_func: Callable, x_domain: ndarray) -> ndarray:
-    """
-    Calculate a y domain based on a function.
-
-    Parameters
-    ----------
-    spline_func : function
-        The spline function.
-    x_domain : ndarray
-        The (n, 1)-shaped ndarray.
-
-    Returns
-    -------
-    ndarray
-        The spline_function(x_domain_spline) vector.
-
-    """
-    return spline_func(x_domain)
 
 
 def split_filename(filename: str) -> Tuple[str, str]:
