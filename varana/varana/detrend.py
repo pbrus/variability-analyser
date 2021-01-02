@@ -8,7 +8,7 @@ from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
 from astropy.stats import sigma_clip
-from numpy import genfromtxt, ndarray
+from numpy import genfromtxt, ndarray, linspace
 
 
 def load_data(filename: str) -> Tuple[ndarray, ndarray, ndarray]:
@@ -103,6 +103,11 @@ def too_many_points_rejected(filename: str, all_points_number: int, current_poin
     """
     if (1 - current_points_number / all_points_number) > 0.05:
         raise ValueError(f"Rejected too many points from {filename}")
+
+
+def _calculate_intervals_for_nodes(start: float, stop: float, nodes_number: int) -> ndarray:
+    """For a given number of nodes and time range determine equal intervals for a time series."""
+    return linspace(start, stop, num=(nodes_number + 1))
 
 
 def split_filename(filename: str) -> Tuple[str, str]:

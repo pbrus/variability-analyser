@@ -12,6 +12,7 @@ from varana.detrend import (
     load_data,
     sigma_clipping_magnitude,
     too_many_points_rejected,
+    _calculate_intervals_for_nodes,
 )
 
 test_data_dir_path = split(realpath(__file__))[0]
@@ -63,3 +64,19 @@ def test_too_many_points_rejected_exception(value):
     filename = "object.dat"
     with pytest.raises(ValueError, match=f"Rejected too many points from {filename}"):
         too_many_points_rejected(filename, 100, value)
+
+
+@pytest.mark.parametrize(
+    "start, stop, nodes, result",
+    [
+        (1.0, 10.0, 3, [1.0, 4.0, 7.0, 10.0]),
+        (1.0, 10.0, 2, [1.0, 5.5, 10.0]),
+        (0.0, 20.0, 4, [0.0, 5.0, 10.0, 15.0, 20.0]),
+        (20.0, 29.0, 3, [20.0, 23.0, 26.0, 29.0]),
+        (49.5, 51.5, 5, [49.5, 49.9, 50.3, 50.7, 51.1, 51.5]),
+        (1.0, 4.0, 5, [1.0, 1.6, 2.2, 2.8, 3.4, 4.0]),
+    ],
+)
+def test_calculate_intervals_for_nodes(start, stop, nodes, result):
+    intervals = _calculate_intervals_for_nodes(start, stop, nodes)
+    np.testing.assert_allclose(intervals, np.array(result))
