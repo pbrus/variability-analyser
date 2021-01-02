@@ -7,7 +7,13 @@ from os.path import realpath, split
 import numpy as np
 import pytest
 
-from varana.detrend import set_interval, validate_nodes_number, load_data, sigma_clipping_magnitude
+from varana.detrend import (
+    set_interval,
+    validate_nodes_number,
+    load_data,
+    sigma_clipping_magnitude,
+    too_many_points_rejected,
+)
 
 test_data_dir_path = split(realpath(__file__))[0]
 synthetic_lc_path = test_data_dir_path + r"/test_data/synthetic_lc.dat"
@@ -54,3 +60,15 @@ def test_sigma_clipping_magnitude():
 
     for i in range(3):
         np.testing.assert_allclose(np.delete(data[i], out_idx), trim_data[i])
+
+
+@pytest.mark.parametrize("value", [96, 97, 98, 99, 100])
+def test_too_many_points_rejected(value):
+    too_many_points_rejected("object.dat", 100, value)
+
+
+@pytest.mark.parametrize("value", [0, 1, 50, 90, 94, 95])
+def test_too_many_points_rejected_exception(value):
+    filename = "object.dat"
+    with pytest.raises(ValueError, match=f"Rejected too many points from {filename}"):
+        too_many_points_rejected(filename, 100, value)

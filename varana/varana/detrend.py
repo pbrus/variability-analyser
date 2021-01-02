@@ -107,40 +107,27 @@ def sigma_clipping_magnitude(data: Tuple[ndarray, ndarray, ndarray]) -> Tuple[nd
     return data[0][mask], data[1][mask], data[2][mask]
 
 
-def too_much_points_rejected(all_points_number: int, current_points_number: int) -> bool:
+def too_many_points_rejected(filename: str, all_points_number: int, current_points_number: int) -> None:
     """
-    Check whether the percentage ratio of size of two sets is too high.
+    For a given data check whether the sigma clipping did reject too many points, i.e. more than 5%.
 
     Parameters
     ----------
+    filename : str
+        A name of the file storing the data.
     all_points_number : int
         The set which contains all points.
     current_points_number : int
         The set which is smaller or equal than all_points_number.
 
-    Returns
-    -------
-    True or False
-        If the ratio is too high it returns True. Otherwise it returns False.
+    Raises
+    ------
+    ValueError
+        Raise when rejected points is more than 5%.
 
     """
     if (1 - current_points_number / all_points_number) > 0.05:
-        return True
-    else:
-        return False
-
-
-def warn_rejected_points(filename: str) -> None:
-    """
-    Print a warning for the file that too many points have been rejected automatically.
-
-    Parameters
-    ----------
-    filename : str
-        The name of the file to which the warning is concerned.
-
-    """
-    print("Rejected too many points from {0:s}".format(filename))
+        raise ValueError(f"Rejected too many points from {filename}")
 
 
 def calculate_kmeans(time: ndarray, magnitude: ndarray, error_magnitude: ndarray, clusters_number: int = 2) -> KMeans:
