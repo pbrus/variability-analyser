@@ -13,6 +13,7 @@ from varana.detrend import (
     sigma_clipping_magnitude,
     too_many_points_rejected,
     _calculate_intervals_for_nodes,
+    calculate_nodes_positions,
 )
 
 test_data_dir_path = split(realpath(__file__))[0]
@@ -80,3 +81,16 @@ def test_too_many_points_rejected_exception(value):
 def test_calculate_intervals_for_nodes(start, stop, nodes, result):
     intervals = _calculate_intervals_for_nodes(start, stop, nodes)
     np.testing.assert_allclose(intervals, np.array(result))
+
+
+@pytest.mark.parametrize(
+    "nodes, result_x, result_y",
+    [(2, np.array([3.0, 8.0]), np.array([-0.8, -2.6])), (3, np.array([2.0, 5.0, 8.5]), np.array([-1.0, -2.0, -2.0]))],
+)
+def test_calculate_nodes_positions(nodes, result_x, result_y):
+    x = np.linspace(1, 10, num=10)
+    y = np.array([-2, -4, 3, -5, 4, -5, 2, -2, -5, -3])
+
+    positions = calculate_nodes_positions(x, y, nodes)
+    np.testing.assert_allclose(positions[:, 0], result_x)
+    np.testing.assert_allclose(positions[:, 1], result_y)
