@@ -94,3 +94,27 @@ def test_calculate_nodes_positions(nodes, result_x, result_y):
     positions = calculate_nodes_positions(x, y, nodes)
     np.testing.assert_allclose(positions[:, 0], result_x)
     np.testing.assert_allclose(positions[:, 1], result_y)
+
+
+@pytest.mark.parametrize(
+    "nodes, result_x, result_y",
+    [
+        (
+            5,
+            np.array([1.7399999999999998, 4.35, 5.4799999999999995, 6.8, 9.080000000000002]),
+            np.array([2.2, -4.5, 3.6, 5.0, 4.8]),
+        ),
+        (
+            6,
+            np.array([1.7399999999999998, 4.699999999999999, 6.0249999999999995, 9.080000000000002]),
+            np.array([2.2, -3.25, 6.75, 4.8]),
+        ),
+    ],
+)
+def test_calculate_nodes_positions_with_gaps(nodes, result_x, result_y):
+    x = np.array([1.2, 1.5, 1.7, 2.0, 2.3, 4.2, 4.5, 5.0, 5.1, 5.5, 5.7, 6.1, 6.8, 8.6, 8.8, 9.1, 9.2, 9.7])
+    y = np.array([8.0, 5.0, 1.0, 5.0, -8.0, -6.0, -3.0, 5.0, -9.0, 7.0, 8.0, 7.0, 5.0, 8.0, 5.0, 4.0, -2.0, 9.0])
+
+    positions = calculate_nodes_positions(x, y, nodes)
+    np.testing.assert_allclose(positions[:, 0], result_x)
+    np.testing.assert_allclose(positions[:, 1], result_y)

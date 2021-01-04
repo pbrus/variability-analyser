@@ -8,7 +8,7 @@ from typing import Callable, Tuple
 
 import matplotlib.pyplot as plt
 from astropy.stats import sigma_clip
-from numpy import genfromtxt, ndarray, linspace, zeros, where, logical_and, mean
+from numpy import genfromtxt, ndarray, linspace, where, logical_and, mean, isnan, full, nan
 
 
 def load_data(filename: str) -> Tuple[ndarray, ndarray, ndarray]:
@@ -129,19 +129,22 @@ def calculate_nodes_positions(time: ndarray, magnitude: ndarray, nodes_number: i
         (m, 2)-shaped array storing positions of the nodes.
 
     """
-    positions = zeros((nodes_number, 2))
+    positions = full((nodes_number, 2), nan)
     start, stop = min(time), max(time)
     intervals = _calculate_intervals_for_nodes(start, stop, nodes_number)
 
     for i, (beg, end) in enumerate(zip(intervals, intervals[1:])):
         if i < nodes_number - 1:
-            indices = where(logical_and(time >= beg, time < end))
+            indices, *_ = where(logical_and(time >= beg, time < end))
         else:
-            indices = where(logical_and(time >= beg, time <= end))
+            indices, *_ = where(logical_and(time >= beg, time <= end))
+
+        if indices.size == 0:
+            continue
 
         positions[i] = [mean(time[indices]), mean(magnitude[indices])]
 
-    return positions
+    return positions[~isnan(positions)].reshape(-1, 2)
 
 
 def split_filename(filename: str) -> Tuple[str, str]:
