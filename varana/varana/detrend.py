@@ -9,6 +9,7 @@ from typing import Callable, Tuple
 import matplotlib.pyplot as plt
 from astropy.stats import sigma_clip
 from numpy import genfromtxt, ndarray, linspace, where, logical_and, mean, isnan, full, nan
+from scipy.interpolate import Akima1DInterpolator
 
 
 def load_data(filename: str) -> Tuple[ndarray, ndarray, ndarray]:
@@ -145,6 +146,26 @@ def calculate_nodes_positions(time: ndarray, magnitude: ndarray, nodes_number: i
         positions[i] = [mean(time[indices]), mean(magnitude[indices])]
 
     return positions[~isnan(positions)].reshape(-1, 2)
+
+
+def akima(nodes_positions: ndarray) -> Akima1DInterpolator:
+    """
+    A wrapper function for Akima's interpolation.
+
+    Parameters
+    ----------
+    nodes_positions : ndarray
+        (m, 2)-shaped array storing positions of the nodes.
+
+    Returns
+    -------
+    Akima1DInterpolator
+        Piecewise cubic polynomials described by Akima.
+
+    """
+    function = Akima1DInterpolator(nodes_positions[:, 0], nodes_positions[:, 1])
+    function.extrapolate = True
+    return function
 
 
 def split_filename(filename: str) -> Tuple[str, str]:
