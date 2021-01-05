@@ -187,21 +187,18 @@ def split_filename(filename: str) -> Tuple[str, str]:
 
 
 def _draw_plot(
-    time: ndarray, magnitude: ndarray, spline_coordinates: tuple, centers: ndarray, marker_size: int = 2
+    time: ndarray, magnitude: ndarray, function: Callable, nodes_positions: ndarray, marker_size: int = 2
 ) -> None:
-    x_spline, y_spline = spline_coordinates
-
     plt.xlabel("Time")
     plt.ylabel("Brightness [mag]")
     plt.gca().invert_yaxis()
-    plt.plot(x_spline, len(x_spline) * [magnitude.mean()], color="gray", linewidth=0.8, linestyle="dashed")
+    plt.plot(time, len(time) * [magnitude.mean()], color="gray", linewidth=0.8, linestyle="dashed")
     plt.plot(time, magnitude, ".", alpha=0.8, markersize=marker_size)
-    plt.plot(x_spline, y_spline, "r--", linewidth=1.5)
-    for center in centers:
-        plt.plot(center[0], center[1], "r.", markersize=15)
+    plt.plot(time, function(time), "r--", linewidth=1.2)
+    plt.plot(nodes_positions[:, 0], nodes_positions[:, 1], "r.", markersize=10)
 
 
-def display_plot(time: ndarray, magnitude: ndarray, spline_coordinates: tuple, centers: ndarray) -> None:
+def display_plot(time: ndarray, magnitude: ndarray, function: Callable, nodes_positions: ndarray) -> None:
     """
     Display a plot.
 
@@ -211,17 +208,17 @@ def display_plot(time: ndarray, magnitude: ndarray, spline_coordinates: tuple, c
         The time vector.
     magnitude : ndarray
         The magnitude vector.
-    spline_coordinates : tuple
-        The tuple containing two arrays (ndarray) with coordinates.
-    centers : ndarray
-        The (n, 2)-shaped ndarray with points.
+    function : Callable
+        Interpolation function.
+    nodes_positions : ndarray
+        (m, 2)-shaped array storing positions of the nodes.
 
     """
-    _draw_plot(time, magnitude, spline_coordinates, centers, 4)
+    _draw_plot(time, magnitude, function, nodes_positions, 4)
     plt.show()
 
 
-def save_plot(time: ndarray, magnitude: ndarray, spline_coordinates: tuple, centers: ndarray, filename: str) -> None:
+def save_plot(time: ndarray, magnitude: ndarray, function: Callable, nodes_positions: ndarray, filename: str) -> None:
     """
     Save a plot to a file.
 
@@ -231,17 +228,16 @@ def save_plot(time: ndarray, magnitude: ndarray, spline_coordinates: tuple, cent
         The time vector.
     magnitude : ndarray
         The magnitude vector.
-    spline_coordinates : ndarray
-        The tuple containing two arrays (ndarray) with coordinates.
-    centers : ndarray
-        The (n, 2)-shaped ndarray with points.
+    function : Callable
+        Interpolation function.
+    nodes_positions : ndarray
     filename : str
         The name of a PNG file to which to save a plot.
 
     """
     figure = plt.figure(figsize=(10, 5), dpi=150)
     figure.add_subplot(111)
-    _draw_plot(time, magnitude, spline_coordinates, centers)
+    _draw_plot(time, magnitude, function, nodes_positions)
     png_filename = join(dirname(filename), split_filename(filename)[0] + ".png")
     figure.savefig(png_filename)
 
