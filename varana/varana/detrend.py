@@ -242,25 +242,23 @@ def save_plot(time: ndarray, magnitude: ndarray, function: Callable, nodes_posit
     figure.savefig(png_filename)
 
 
-def detrend_data(data: ndarray, spline_func: Callable, mean_magnitude: float):
+def detrend_magnitude(time: ndarray, magnitude: ndarray, function: Callable) -> ndarray:
     """
-    Detrend magnitudes from the data using a spline function.
+    Detrend magnitudes from the data using an interpolated function.
 
     Parameters
     ----------
-    data : ndarray
-        An object which stores the data in three columns:
-        time magnitude error_magnitude
-    spline_func : function
-        A spline function.
-    mean_magnitude : float
-        A value of mean magnitudes from the data (without outstanding points).
+    time : ndarray
+        The time vector.
+    magnitude : ndarray
+        The magnitude vector.
+    function : Callable
+        Interpolation function.
 
     Returns
     -------
-    data : ndarray
-        Updated data.
+    magnitude : ndarray
+        The magnitude vector without trend.
 
     """
-    data[:, 1] = data[:, 1] - spline_func(data[:, 0]) + mean_magnitude
-    return data
+    return magnitude - function(time) + magnitude.mean()
