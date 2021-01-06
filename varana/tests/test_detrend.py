@@ -8,12 +8,13 @@ import numpy as np
 import pytest
 
 from varana.detrend import (
-    validate_nodes_number,
-    load_data,
-    sigma_clipping_magnitude,
-    too_many_points_rejected,
     _calculate_intervals_for_nodes,
     calculate_nodes_positions,
+    load_data,
+    sigma_clipping_magnitude,
+    split_filename,
+    too_many_points_rejected,
+    validate_nodes_number,
 )
 
 test_data_dir_path = split(realpath(__file__))[0]
@@ -118,3 +119,13 @@ def test_calculate_nodes_positions_with_gaps(nodes, result_x, result_y):
     positions = calculate_nodes_positions(x, y, nodes)
     np.testing.assert_allclose(positions[:, 0], result_x)
     np.testing.assert_allclose(positions[:, 1], result_y)
+
+
+@pytest.mark.parametrize(
+    "filename, name, extension",
+    [("data.dat", "data", ".dat"), ("list.txt", "list", ".txt"), ("database.csv", "database", ".csv")],
+)
+def test_split_filename(filename, name, extension):
+    base, ext = split_filename(filename)
+    assert base == name
+    assert ext == extension
