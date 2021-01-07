@@ -261,4 +261,4 @@ def detrend_magnitude(time: ndarray, magnitude: ndarray, function: Callable) -> 
         The magnitude vector without trend.
 
     """
-    return magnitude - function(time) + magnitude.mean()
+    return magnitude - function(time)

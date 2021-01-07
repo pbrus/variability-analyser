@@ -1,29 +1,24 @@
 #!/usr/bin/env python3
 """
-Detrend a light curve removing seasonal deviations.
+Detrend a light curve removing seasonal and instrumental deviations.
 
 """
 from argparse import ArgumentParser, RawTextHelpFormatter, ArgumentTypeError
 from copy import deepcopy
 from textwrap import dedent
 
-from numpy import savetxt
+from numpy import column_stack, savetxt
 
 from varana.detrend import (
-    calculate_kmeans,
-    detrend_data,
+    akima,
+    calculate_nodes_positions,
+    detrend_magnitude,
     display_plot,
-    get_data,
+    load_data,
     save_plot,
     sigma_clipping_magnitude,
-    sorted_centers,
-    spline_function,
-    spline_order,
-    too_much_points_rejected,
-    unpack_data,
-    valid_seasons_amount,
-    warn_rejected_points,
-    x_domain_spline,
+    too_many_points_rejected,
+    validate_nodes_number,
 )
 
 arg_parser = ArgumentParser(
@@ -57,11 +52,10 @@ arg_parser.add_argument(
 )
 
 arg_parser.add_argument(
-    "seasons_amount",
+    "nodes_number",
     help=dedent(
         """\
-    The number of seasons in the data.
-    The seasons are separated by time-gaps in the data.
+    The number of nodes.
 
     """
     ),
@@ -92,33 +86,29 @@ arg_parser.add_argument(
 )
 
 args = arg_parser.parse_args()
-data, seasons_amount = None, None
+time, magnitude, errors = None, None, None
+data, nodes_number = None, None
 
 try:
-    seasons_amount = valid_seasons_amount(args.seasons_amount)
-    data = get_data(args.input_lightcurve)
-except (ArgumentTypeError, OSError) as error:
+    nodes_number = validate_nodes_number(args.nodes_number)
+    data = load_data(args.input_lightcurve)
+except (ArgumentTypeError, ValueError) as error:
     print(error)
     exit()
 
-org_data = deepcopy(data)
+original_data = deepcopy(data)
 data = sigma_clipping_magnitude(data)
+too_many_points_rejected(args.input_lightcurve, len(original_data[1]), len(data[1]))
 
-if too_much_points_rejected(len(org_data), len(data)):
-    warn_rejected_points(args.input_lightcurve)
-
-time, magnitude, error_magnitude = unpack_data(data)
-kmeans = calculate_kmeans(time, magnitude, error_magnitude, seasons_amount)
-centers = sorted_centers(kmeans)
-spline = spline_function(centers, spline_order(seasons_amount))
-x_spline = x_domain_spline(time)
-y_spline = spline(x_spline)
-spline_coordinates = x_spline, y_spline
+time, magnitude, _ = data
+nodes = calculate_nodes_positions(time, magnitude, args.nodes_number)
+func = akima(nodes)
+time, magnitude, errors = original_data
 
 if args.display:
-    display_plot(time, magnitude, spline_coordinates, centers)
+    display_plot(time, magnitude, func, nodes)
 if args.image:
-    save_plot(time, magnitude, spline_coordinates, centers, args.output_lightcurve)
+    save_plot(time, magnitude, func, nodes, args.output_lightcurve)
 
-detrended_data = detrend_data(org_data, spline, magnitude.mean())
-savetxt(args.output_lightcurve, detrended_data, fmt="%18.7f %15.7f %15.7f")
+detrended_magnitude = detrend_magnitude(time, magnitude, func)
+savetxt(args.output_lightcurve, column_stack((time, detrended_magnitude, errors)), fmt="%18.7f %15.7f %15.7f")
