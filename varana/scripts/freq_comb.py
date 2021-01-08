@@ -15,7 +15,7 @@ arg_parser = ArgumentParser(
     >> Check whether a single frequency is made
     >> of linear combination of frequencies"""
     ),
-    epilog="Copyright (c) 2020 Przemysław Bruś",
+    epilog="Copyright (c) 2021 Przemysław Bruś",
     formatter_class=RawTextHelpFormatter,
 )
 

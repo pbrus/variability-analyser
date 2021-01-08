@@ -11,7 +11,7 @@ from varana.plt_pdgrm import display_periodogram, get_data, save_periodogram
 arg_parser = ArgumentParser(
     prog="plt_pdgrm.py",
     description=">> Display a periodogram <<",
-    epilog="Copyright (c) 2020 Przemysław Bruś",
+    epilog="Copyright (c) 2021 Przemysław Bruś",
     formatter_class=RawTextHelpFormatter,
 )
 

@@ -276,7 +276,7 @@ if __name__ == "__main__":
     arg_parser = ArgumentParser(
         prog="trim.py",
         description=">> Removes outstanding points from a light curve <<",
-        epilog="Copyright (c) 2020 Przemysław Bruś",
+        epilog="Copyright (c) 2021 Przemysław Bruś",
         formatter_class=RawTextHelpFormatter,
     )
 

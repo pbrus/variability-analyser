@@ -13,7 +13,7 @@ from varana.fit import fit_final_curve, print_parameters, save_residuals
 arg_parser = ArgumentParser(
     prog="fit.py",
     description=">> Fit a sum of sines to the light curve <<",
-    epilog="Copyright (c) 2020 Przemysław Bruś",
+    epilog="Copyright (c) 2021 Przemysław Bruś",
     formatter_class=RawTextHelpFormatter,
 )
 

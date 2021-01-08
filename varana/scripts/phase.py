@@ -11,7 +11,7 @@ from varana.phase import display_plot, get_model, prepare_data, save_phased_ligh
 arg_parser = ArgumentParser(
     prog="phase.py",
     description=">> Phase a light curve <<",
-    epilog="Copyright (c) 2020 Przemysław Bruś",
+    epilog="Copyright (c) 2021 Przemysław Bruś",
     formatter_class=RawTextHelpFormatter,
 )
 

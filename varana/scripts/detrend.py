@@ -24,7 +24,7 @@ from varana.detrend import (
 arg_parser = ArgumentParser(
     prog="detrend.py",
     description=">> Remove seasonal trends from a light curve <<",
-    epilog="Copyright (c) 2020 Przemysław Bruś",
+    epilog="Copyright (c) 2021 Przemysław Bruś",
     formatter_class=RawTextHelpFormatter,
 )
 
