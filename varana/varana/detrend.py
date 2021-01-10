@@ -242,7 +242,7 @@ def save_plot(time: ndarray, magnitude: ndarray, function: Callable, nodes_posit
     figure.savefig(png_filename)
 
 
-def detrend_magnitude(time: ndarray, magnitude: ndarray, function: Callable) -> ndarray:
+def detrend_magnitude(time: ndarray, magnitude: ndarray, function: Callable, mean_magnitude: float = 0.0) -> ndarray:
     """
     Detrend magnitudes from the data using an interpolated function.
 
@@ -254,6 +254,8 @@ def detrend_magnitude(time: ndarray, magnitude: ndarray, function: Callable) -> 
         The magnitude vector.
     function : Callable
         Interpolation function.
+    mean_magnitude : float
+        A mean value of magnitude.
 
     Returns
     -------
@@ -261,4 +263,4 @@ def detrend_magnitude(time: ndarray, magnitude: ndarray, function: Callable) -> 
         The magnitude vector without trend.
 
     """
-    return magnitude - function(time)
+    return magnitude - function(time) + mean_magnitude
