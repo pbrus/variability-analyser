@@ -63,6 +63,18 @@ arg_parser.add_argument(
 )
 
 arg_parser.add_argument(
+    "--lightcurve",
+    help=dedent(
+        """\
+    The name of a file which will store
+    an additional light curve to detrend.
+
+    """
+    ),
+    metavar="filename",
+)
+
+arg_parser.add_argument(
     "--display",
     help=dedent(
         """\
@@ -110,5 +122,10 @@ if args.display:
 if args.image:
     save_plot(time, magnitude, func, nodes, args.output_lightcurve)
 
-detrended_magnitude = detrend_magnitude(time, magnitude, func)
+detrended_magnitude = detrend_magnitude(time, magnitude, func, magnitude.mean())
 savetxt(args.output_lightcurve, column_stack((time, detrended_magnitude, errors)), fmt="%18.7f %15.7f %15.7f")
+
+if args.lightcurve:
+    time, magnitude, errors = load_data(args.lightcurve)
+    detrended_magnitude = detrend_magnitude(time, magnitude, func)
+    savetxt(args.lightcurve, column_stack((time, detrended_magnitude, errors)), fmt="%18.7f %15.7f %15.7f")
