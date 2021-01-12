@@ -5,9 +5,8 @@ Trim a light curve using the sigma clipping or a manual rejection.
 """
 from argparse import ArgumentParser, RawTextHelpFormatter
 from copy import deepcopy
-from os.path import basename, splitext, dirname, join
+from os.path import dirname, join
 from textwrap import dedent
-from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy.ma as ma
@@ -16,6 +15,8 @@ from matplotlib.backend_bases import MouseEvent
 from matplotlib.widgets import Cursor
 from numpy import genfromtxt, std, arange, savetxt, bool_, ndarray, array_equal
 from numpy.ma import masked_array
+
+from varana.detrend import split_filename
 
 limit = list()
 lim = list()
@@ -143,24 +144,6 @@ def x_domain(time: ndarray) -> ndarray:
     t.mask = False
 
     return arange(t.min(), t.max(), (t.max() - t.min()) / len(t))
-
-
-def split_filename(filename: str) -> Tuple[str, str]:
-    """
-    Split a filename into a name and an extension.
-
-    Parameters
-    ----------
-    filename : str
-        The name of the file.
-
-    Returns
-    -------
-    tuple
-        A tuple: (basename, extension).
-
-    """
-    return splitext(basename(filename))
 
 
 def _draw_plot(ax: Axes, data: masked_array, lower_line: int, upper_line: int, marker_size: int = 2) -> None:
