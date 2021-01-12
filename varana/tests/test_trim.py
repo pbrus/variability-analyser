@@ -67,8 +67,15 @@ class TrimTest(unittest.TestCase):
         for filename, file_tuple in zip(filenames, file_tuples):
             self.assertEqual(split_filename(filename), file_tuple)
 
+    def test_filter_lightcurve_exception(self):
+        data = np.array([[1.0, 1.24, 9.0], [-2.4, 11.3, -5.6], [-123, 5.3, 81.0]])
+        trim_data = np.ma.array([[1.0, 1.24, 9.0], [-2.39, 11.3, -5.6], [-123, 5.3, 81.0]])
+
+        with self.assertRaises(ValueError, msg="Cannot trim light curve. Got different data"):
+            filter_lightcurve(data, trim_data)
+
     def test_filter_lightcurve(self):
-        array = np.ma.array(
+        result = np.ma.array(
             [
                 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
                 [10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
@@ -79,10 +86,22 @@ class TrimTest(unittest.TestCase):
                 [90, 91, 92, 93, 94, 95, 96, 97, 98, 99],
             ]
         )
-        data = np.ma.arange(100).reshape(10, 10)
-        data.mask = [False]
-        data.mask[2, :] = data.mask[5:7, :] = True
-        self.assertTrue(np.allclose(array, filter_lightcurve(data)))
+        data = np.arange(100).reshape(10, 10)
+        trim_data = np.ma.arange(100).reshape(10, 10)
+        trim_data.mask = [False]
+        trim_data.mask[2, :] = trim_data.mask[5:7, :] = True
+        self.assertTrue(np.allclose(result, filter_lightcurve(data, trim_data)))
+
+    def test_filter_different_lightcurve(self):
+        result = np.array([[2, 7], [3, 9], [4, 11], [5, 13], [6, 15], [7, 17]])
+        x = np.arange(0, 10)
+        y1 = 2 * x + 3
+        y2 = 3 * x - 100
+        data = np.column_stack((x, y1))
+        trim_data = np.ma.column_stack((x, y2))
+        trim_data.mask = True
+        trim_data.mask[2:-2, :] = False
+        self.assertTrue(np.allclose(result, filter_lightcurve(data, trim_data)))
 
     def tearDown(self):
         self.lc_filename = None

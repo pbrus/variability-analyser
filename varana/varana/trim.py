@@ -14,7 +14,7 @@ import numpy.ma as ma
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import MouseEvent
 from matplotlib.widgets import Cursor
-from numpy import genfromtxt, std, arange, savetxt, bool_, ndarray
+from numpy import genfromtxt, std, arange, savetxt, bool_, ndarray, array_equal
 from numpy.ma import masked_array
 
 limit = list()
@@ -249,14 +249,16 @@ def save_plot(data: masked_array, filename: str, lower_line: int = 0, upper_line
     figure.savefig(png_filename)
 
 
-def filter_lightcurve(data: masked_array) -> ndarray:
+def filter_lightcurve(data: ndarray, trim_data: masked_array) -> ndarray:
     """
     Filter the data removing outstanding points, i.e. masked rows.
 
     Parameters
     ----------
-    data : MaskedArray
-        The (n, 3)-shaped array with data.
+    data : ndarray
+        The (n, 3)-shaped array with data to clip.
+    trim_data : MaskedArray
+        The (n, 3)-shaped array with masked points.
 
     Returns
     -------
@@ -264,6 +266,11 @@ def filter_lightcurve(data: masked_array) -> ndarray:
         The (n, 3)-shaped array without outstanding points.
 
     """
+    if not array_equal(data[:, 0], trim_data.data[:, 0]):
+        raise ValueError("Cannot trim light curve. Got different data")
+
+    data = ma.array(data, mask=trim_data.mask)
+
     if type(data.mask) == bool_:
         return data
     else:
@@ -377,4 +384,4 @@ if __name__ == "__main__":
         else:
             save_plot(trim_data, args.output_lightcurve, args.min, args.max)
 
-    savetxt(args.output_lightcurve, filter_lightcurve(trim_data), fmt="%18.7f %15.7f %15.7f")
+    savetxt(args.output_lightcurve, filter_lightcurve(input_data, trim_data), fmt="%18.7f %15.7f %15.7f")
