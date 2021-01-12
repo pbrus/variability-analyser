@@ -337,6 +337,18 @@ if __name__ == "__main__":
     )
 
     arg_parser.add_argument(
+        "--lightcurve",
+        help=dedent(
+            """\
+        The name of a file which will store an additional
+        light curve which should be also clipped.
+
+        """
+        ),
+        metavar="filename",
+    )
+
+    arg_parser.add_argument(
         "--display",
         help=dedent(
             """\
@@ -385,3 +397,7 @@ if __name__ == "__main__":
             save_plot(trim_data, args.output_lightcurve, args.min, args.max)
 
     savetxt(args.output_lightcurve, filter_lightcurve(input_data, trim_data), fmt="%18.7f %15.7f %15.7f")
+
+    if args.lightcurve:
+        data = get_data(args.lightcurve)
+        savetxt(args.lightcurve, filter_lightcurve(data, trim_data), fmt="%18.7f %15.7f %15.7f")
