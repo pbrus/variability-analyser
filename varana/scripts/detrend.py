@@ -104,7 +104,7 @@ data, nodes_number = None, None
 try:
     nodes_number = validate_nodes_number(args.nodes_number)
     data = load_data(args.input_lightcurve)
-except (ArgumentTypeError, ValueError) as error:
+except (ArgumentTypeError, ValueError, OSError) as error:
     print(error)
     exit()
 
