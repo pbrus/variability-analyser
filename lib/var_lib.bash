@@ -157,7 +157,7 @@ function phase_lightcurve()
 
 function detrend_residuals()
 {
-    detrend_data ${RESID_FILE} ${LC_NODES_NUMBER}
+    detrend_data_residuals ${RESID_FILE} ${LC_NODES_NUMBER}
     remove_files_or_dirs ${RESID_FILE/${LC_SUFFIX}/.png}
 }
 
@@ -257,6 +257,8 @@ function restart_analysis()
     remove_files_or_dirs ${fourier_transform_file} \
                          ${fourier_transform_max_file} model${LC_SUFFIX} \
                          resid${LC_SUFFIX} resid.trf resid.max frequencies_table
+
+    copy_lightcurve ${lightcurve_file} .
 }
 
 function clean_working_dir()
