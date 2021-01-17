@@ -163,7 +163,7 @@ function detrend_residuals()
 
 function trim_residuals()
 {
-    trim.py ${RESID_FILE} ${RESID_FILE} --display
+    trim.py ${RESID_FILE} ${RESID_FILE} --display --lightcurve ${lightcurve_filename}
 }
 
 function change_fourier_parameters()
