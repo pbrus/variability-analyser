@@ -64,7 +64,9 @@ def validate_nodes_number(nodes_number: int) -> int:
         return nodes_number
 
 
-def sigma_clipping_magnitude(data: Tuple[ndarray, ndarray, ndarray]) -> Tuple[ndarray, ndarray, ndarray]:
+def sigma_clipping_magnitude(
+    data: Tuple[ndarray, ndarray, ndarray], sigma: float = 3.0
+) -> Tuple[ndarray, ndarray, ndarray]:
     """
     Filter the data using 3x sigma clipping of magnitudes.
 
@@ -72,6 +74,8 @@ def sigma_clipping_magnitude(data: Tuple[ndarray, ndarray, ndarray]) -> Tuple[nd
     ----------
     data : Tuple[ndarray, ndarray, ndarray]
         A tuple consisting of three (n, 1)-shape arrays.
+    sigma : float
+        The number of standard deviations. Default is 3.0.
 
     Returns
     -------
@@ -79,7 +83,7 @@ def sigma_clipping_magnitude(data: Tuple[ndarray, ndarray, ndarray]) -> Tuple[nd
         Updated data with removed outstanding points of magnitude.
 
     """
-    mask = ~sigma_clip(data[1], sigma=3.0).mask
+    mask = ~sigma_clip(data[1], sigma=sigma).mask
     return data[0][mask], data[1][mask], data[2][mask]
 
 

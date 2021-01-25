@@ -75,6 +75,21 @@ arg_parser.add_argument(
 )
 
 arg_parser.add_argument(
+    "--sigma",
+    help=dedent(
+        """\
+    The number (float) of standard deviations
+    to filter data before trend removing.
+    (default = 3.0)
+
+    """
+    ),
+    metavar="sig",
+    type=float,
+    default=3.0,
+)
+
+arg_parser.add_argument(
     "--display",
     help=dedent(
         """\
@@ -109,7 +124,7 @@ except (ArgumentTypeError, ValueError, OSError) as error:
     exit()
 
 original_data = deepcopy(data)
-data = sigma_clipping_magnitude(data)
+data = sigma_clipping_magnitude(data, args.sigma)
 too_many_points_rejected(args.input_lightcurve, len(original_data[1]), len(data[1]))
 
 time, magnitude, _ = data
