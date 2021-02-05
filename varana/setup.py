@@ -13,10 +13,10 @@ setuptools.setup(
     url="https://github.com/pbrus/variability-analyser/tree/master/varana",
     packages=setuptools.find_packages(exclude=["tests"]),
     install_requires=[
-        "matplotlib==3.3.3",
-        "numpy==1.19.4",
-        "scikit-learn==0.23.2",
-        "scipy==1.5.4",
+        "astropy>=4.1",
+        "matplotlib>=3.3.4",
+        "numpy>=1.19.5",
+        "scipy>=1.5.4",
     ],
     scripts=[
         "scripts/detrend.py",
