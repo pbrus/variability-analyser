@@ -20,6 +20,8 @@ We can change the number of nodes. If we type `n` then `11`, we get the followin
 
 <img src="resources/rr_lyr_detrend-2.png" width="800" alt="rr_lyr_detrend-2.png">
 
+> :point_right: **_NOTE:_** The number of nodes can be less than typed. This may happen for data with gaps in the time domain. If the position of a node covers such gap it will be removed. In other words some data around a node are required to compute its position.
+
 It seems to be right. In the next step the software removes the trend and performs sigma clipping on the time series automatically. After that an interactive window appears. If the result is not satisfactory, we can improve it just clicking on the window twice. All points lying outside two horizontal lines are removed and colored by red:
 
 <img src="resources/rr_lyr_trim.png" width="800" alt="rr_lyr_trim.png">
