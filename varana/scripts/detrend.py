@@ -130,13 +130,13 @@ too_many_points_rejected(args.input_lightcurve, len(original_data[1]), len(data[
 time, magnitude, _ = data
 nodes = calculate_nodes_positions(time, magnitude, args.nodes_number)
 func = akima(nodes)
-time, magnitude, errors = original_data
 
 if args.display:
     display_plot(time, magnitude, func, nodes)
 if args.image:
     save_plot(time, magnitude, func, nodes, args.output_lightcurve)
 
+time, magnitude, errors = original_data
 detrended_magnitude = detrend_magnitude(time, magnitude, func, magnitude.mean())
 savetxt(args.output_lightcurve, column_stack((time, detrended_magnitude, errors)), fmt="%18.7f %15.7f %15.7f")
 
