@@ -79,7 +79,7 @@ arg_parser.add_argument(
     help=dedent(
         """\
     The number (float) of standard deviations
-    to filter data before trend removing.
+    to filter data before trend fitting.
     (default = 3.0)
 
     """

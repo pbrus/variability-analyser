@@ -15,7 +15,7 @@ This package provides tools to:
 """
 
 __all__ = ["detrend", "fit", "freq_comb", "phase", "plt_pdgrm", "trim"]
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 from varana import detrend
 from varana import fit
