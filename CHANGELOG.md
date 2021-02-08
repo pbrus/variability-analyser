@@ -1,5 +1,5 @@
 # Variability Analyser Changelog
-## [1.1.0]
+## [1.1.0] 2021-02-08
 ### Added
 * Optional argument `--lightcurve filename` to `detrend.py` script applying a trend function to a given filename
 * Optional argument `--sigma sig` to `detrend.py` script which is the standard deviations to filter input data before trend fitting
